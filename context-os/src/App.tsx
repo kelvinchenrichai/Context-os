@@ -170,8 +170,13 @@ export default function App() {
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    const done = localStorage.getItem('context_os_tour_completed');
-    if (done !== 'true') setTimeout(() => setIsTourOpen(true), 1200);
+    // Only show tour if user has never completed it before
+    // Use a user-specific key so different users on same browser each get the tour
+    const userKey = `context_os_tour_completed_${currentUser?.id || 'anon'}`;
+    const done = localStorage.getItem(userKey) || localStorage.getItem('context_os_tour_completed');
+    if (done !== 'true') {
+      setTimeout(() => setIsTourOpen(true), 1200);
+    }
   }, [isLoggedIn]);
 
   // ─── Normalize API responses to frontend shape ────────────────────────────
@@ -416,7 +421,7 @@ export default function App() {
 
   return (
     <div className="flex w-full min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors duration-200">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} lang={lang} sourcesCount={sources.length} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} lang={lang} sourcesCount={sources.length} currentUser={currentUser} onLogout={handleLogout} />
 
       <main className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0 h-screen overflow-hidden">
         <MobileHeader lang={lang} setIsOpen={setIsMobileDrawerOpen} />

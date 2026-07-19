@@ -1,0 +1,25 @@
+{
+  "name": "Context OS",
+  "short_name": "ContextOS",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0f1115",
+  "background_color": "#0f1115",
+  "description": "Premium knowledge hub to package references, PDFs and media streams into structured AI-ready context.",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/512/cloud-system.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

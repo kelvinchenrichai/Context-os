@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+/* Tailwind v4 defaults `dark:` to the OS/browser `prefers-color-scheme` media
+   query. This app toggles a `.dark` class on <html> via JS (see App.tsx),
+   so we must explicitly tell Tailwind to key `dark:` off that class instead.
+   Without this line, the in-app Light/Dark buttons don't actually control
+   anything visually — the browser's OS-level color scheme silently wins. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --stone-50: #FFFFFF;   /* Radiant pure white for canvas background & active panels */
+  --stone-100: #F8FAFC;  /* Softest silver-white slate background (slate-50 equivalent) */
+  --stone-150: #F1F5F9;  /* Crisp light-slate border line (slate-100 equivalent) */
+  --stone-200: #E2E8F0;  /* Standard clean slate border (slate-200 equivalent) */
+  --stone-250: #CBD5E1;  /* Slate-300 border / outline details */
+  --stone-300: #94A3B8;  /* Slate-400 clear inactive text / outlines */
+  --stone-400: #64748B;  /* Slate-500 helper text and secondary details */
+  --stone-500: #475569;  /* Slate-600 secondary text (rich slate-charcoal, excellent contrast) */
+  --stone-600: #334155;  /* Slate-700 standard body text (comfortable for long reading) */
+  --stone-700: #1E293B;  /* Slate-800 high-contrast subheadings */
+  --stone-800: #111622;  /* Slate-900 premium dark accent/hover states */
+  --stone-900: #0E131F;  /* Deep cosmic obsidian for primary buttons & dark headings */
+  --stone-950: #080C14;  /* Ultra-dark graphite black for primary labels and absolute black accents */
+}
+
+.dark {
+  --stone-50: #FFFFFF;   /* Radiant pure white for active headings and primary accents */
+  --stone-100: #F8FAFC;  /* Brightest silver-white for standard body text (extremely clear and legible) */
+  --stone-150: #F1F5F9;  /* Highly readable bright light-slate for secondary text and descriptions */
+  --stone-200: #E2E8F0;  /* High-contrast silver-gray for muted text / labels */
+  --stone-250: #CBD5E1;  /* Standard gray for medium text & visible icons */
+  --stone-300: #94A3B8;  /* Clear, bright slate-gray for inactive text and icons */
+  --stone-400: #64748B;  /* Distinct helper text and secondary details */
+  --stone-500: #334155;  /* High-contrast, sharp border line (slate-500 equivalent) */
+  --stone-600: #1E293B;  /* Fine border line and dark separator */
+  --stone-700: #1A2030;  /* Slightly lighter dark background for active items */
+  --stone-800: #111622;  /* Premium dark card / panel surface background (extremely clean) */
+  --stone-900: #0E131F;  /* Deep cosmic obsidian canvas background */
+  --stone-950: #080C14;  /* Ultra-dark graphite black for sidebar and layout wrapping */
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Custom Professional Polish Palette Mappings */
+  --color-stone-50: var(--stone-50);
+  --color-stone-100: var(--stone-100);
+  --color-stone-150: var(--stone-150);
+  --color-stone-200: var(--stone-200);
+  --color-stone-250: var(--stone-250);
+  --color-stone-300: var(--stone-300);
+  --color-stone-400: var(--stone-400);
+  --color-stone-500: var(--stone-500);
+  --color-stone-600: var(--stone-600);
+  --color-stone-700: var(--stone-700);
+  --color-stone-800: var(--stone-800);
+  --color-stone-900: var(--stone-900);
+  --color-stone-950: var(--stone-950);
+}
+
+/* Custom modern scrollbar rules */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--stone-200);
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--stone-800);
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Base style resets and beautiful focus styling */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--stone-900) !important;
+}
+
+/* Card hover animation utility */
+.hover-card-trigger {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-card-trigger:hover {
+  transform: translateY(-2px);
+  border-color: var(--stone-900);
+}
+
+

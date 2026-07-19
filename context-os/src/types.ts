@@ -83,6 +83,31 @@ export interface Category {
 export type Theme = 'dark' | 'light';
 export type Language = 'en' | 'zh-TW';
 
+export type PlanId = 'free' | 'pro' | 'power';
+
+export interface PlanLimits {
+  maxProjects: number;   // -1 = unlimited
+  maxSources: number;
+  maxAiAnalysesPerMonth: number;
+}
+
+export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
+  free:  { maxProjects: 3,  maxSources: 100, maxAiAnalysesPerMonth: 10 },
+  pro:   { maxProjects: -1, maxSources: 1000, maxAiAnalysesPerMonth: 200 },
+  power: { maxProjects: -1, maxSources: -1,   maxAiAnalysesPerMonth: -1 },
+};
+
+export type ApiProvider = 'gemini' | 'openai' | 'anthropic';
+
+export interface ApiKey {
+  id: string;
+  provider: ApiProvider;
+  label: string;
+  maskedKey: string;   // e.g. "AIza••••••••XfN0"
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface TranslationDict {
   dashboard: string;
   projects: string;

@@ -4,6 +4,10 @@ import {
   Project, 
   Source, 
   Category,
+  ApiKey,
+  ApiProvider,
+  PlanId,
+  PLAN_LIMITS,
   Language, 
   Theme, 
   ProjectType, 
@@ -23,6 +27,7 @@ import {
 import Sidebar from './components/Sidebar';
 import BottomNav from './components/BottomNav';
 import { MobileHeader, MobileDrawer } from './components/MobileHeaderAndDrawer';
+import PwaInstallPrompt from './components/PwaInstallPrompt';
 
 // Page imports
 import Dashboard from './pages/Dashboard';
@@ -37,6 +42,8 @@ import TagsPage from './pages/TagsPage';
 import SearchPage from './pages/SearchPage';
 import ExportContextPage from './pages/ExportContextPage';
 import Settings from './pages/Settings';
+import PlanPage from './pages/PlanPage';
+import ApiKeysPage from './pages/ApiKeysPage';
 import OnboardingTour from './components/OnboardingTour';
 
 // Maps a route pathname to the legacy "tab id" vocabulary that Sidebar /
@@ -53,6 +60,8 @@ function pathToTabId(pathname: string): string {
   if (pathname.startsWith('/tags')) return 'tags';
   if (pathname.startsWith('/search')) return 'search';
   if (pathname.startsWith('/export')) return 'export';
+  if (pathname.startsWith('/settings/plan')) return 'settings';
+  if (pathname.startsWith('/settings/api-keys')) return 'settings';
   if (pathname.startsWith('/settings')) return 'settings';
   if (pathname.startsWith('/share')) return 'share';
   return 'dashboard';
@@ -93,6 +102,15 @@ export default function App() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [sources, setSources] = useState<Source[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [plan, setPlanState] = useState<PlanId>(() => {
+    return (localStorage.getItem('context_os_plan') as PlanId) || 'free';
+  });
+  const [aiAnalysesUsed, setAiAnalysesUsed] = useState<number>(() => {
+    return parseInt(localStorage.getItem('context_os_ai_analyses') || '0', 10);
+  });
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>(() => {
+    try { return JSON.parse(localStorage.getItem('context_os_api_keys') || '[]'); } catch { return []; }
+  });
 
   // 3. Onboarding Tour / Mobile Drawer States
   const [isTourOpen, setIsTourOpen] = useState(false);
@@ -164,6 +182,33 @@ export default function App() {
     localStorage.setItem('context_os_categories', JSON.stringify(updatedCategories));
   };
 
+  const setPlan = (p: PlanId) => {
+    setPlanState(p);
+    localStorage.setItem('context_os_plan', p);
+  };
+
+  const saveApiKeys = (keys: ApiKey[]) => {
+    setApiKeys(keys);
+    localStorage.setItem('context_os_api_keys', JSON.stringify(keys));
+  };
+
+  const handleAddApiKey = (provider: ApiProvider, rawKey: string, label: string) => {
+    const masked = rawKey.slice(0, 6) + '••••••••' + rawKey.slice(-4);
+    const newKey: ApiKey = {
+      id: `key-${Date.now()}`,
+      provider,
+      label,
+      maskedKey: masked,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+    saveApiKeys([...apiKeys, newKey]);
+  };
+
+  const handleDeleteApiKey = (id: string) => saveApiKeys(apiKeys.filter(k => k.id !== id));
+
+  const handleToggleApiKey = (id: string) => saveApiKeys(apiKeys.map(k => k.id === id ? { ...k, isActive: !k.isActive } : k));
+
   // 4. ACTION HANDLERS
 
   // Create Project handler
@@ -175,6 +220,15 @@ export default function App() {
     defaultCategory: string,
     status: ProjectStatus
   ) => {
+    // Free plan: max 3 projects
+    const limit = PLAN_LIMITS[plan].maxProjects;
+    if (limit !== -1 && projects.length >= limit) {
+      alert(lang === 'zh-TW'
+        ? `免費版最多只能建立 ${limit} 個專案。請升級方案以建立更多專案。`
+        : `Your ${plan} plan allows up to ${limit} projects. Please upgrade to create more.`);
+      navigate('/settings/plan');
+      return;
+    }
     const newProject: Project = {
       id: `proj-${Date.now()}`,
       name,
@@ -297,6 +351,13 @@ export default function App() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    // Increment AI analyses counter
+    if (sourceData.analyzeNow) {
+      const next = aiAnalysesUsed + 1;
+      setAiAnalysesUsed(next);
+      localStorage.setItem('context_os_ai_analyses', String(next));
+    }
 
     const updated = [newSource, ...sources];
     saveSourcesToStorage(updated);
@@ -555,6 +616,32 @@ export default function App() {
               onCreateCategory={handleCreateCategory}
               onRenameCategory={handleRenameCategory}
               onDeleteCategory={handleDeleteCategory}
+              onNavigatePlan={() => navigate('/settings/plan')}
+              onNavigateApiKeys={() => navigate('/settings/api-keys')}
+            />
+          } />
+
+          <Route path="/settings/plan" element={
+            <PlanPage
+              lang={lang}
+              plan={plan}
+              setPlan={setPlan}
+              projectCount={projects.length}
+              sourceCount={sources.length}
+              aiAnalysesUsed={aiAnalysesUsed}
+              onBack={() => navigate('/settings')}
+            />
+          } />
+
+          <Route path="/settings/api-keys" element={
+            <ApiKeysPage
+              lang={lang}
+              apiKeys={apiKeys}
+              onAddKey={handleAddApiKey}
+              onDeleteKey={handleDeleteApiKey}
+              onToggleKey={handleToggleApiKey}
+              onBack={() => navigate('/settings')}
+              isPowerPlan={plan === 'power'}
             />
           } />
 
@@ -574,6 +661,9 @@ export default function App() {
         isOpen={isMobileDrawerOpen} 
         setIsOpen={setIsMobileDrawerOpen} 
       />
+
+      {/* PWA install prompt */}
+      <PwaInstallPrompt lang={lang} />
 
       {/* Onboarding Tour overlay */}
       <OnboardingTour 

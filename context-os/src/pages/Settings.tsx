@@ -32,14 +32,16 @@ interface SettingsProps {
   onCreateCategory: (name: string) => void;
   onRenameCategory: (id: string, newName: string) => void;
   onDeleteCategory: (id: string) => void;
+  onNavigatePlan: () => void;
+  onNavigateApiKeys: () => void;
 }
 
 export default function Settings({ 
   lang, setLang, theme, setTheme, onRestartTour,
-  categories, sources, onCreateCategory, onRenameCategory, onDeleteCategory
+  categories, sources, onCreateCategory, onRenameCategory, onDeleteCategory,
+  onNavigatePlan, onNavigateApiKeys
 }: SettingsProps) {
   const t = TRANSLATIONS[lang];
-  const [activePlan, setActivePlan] = useState<'free' | 'pro' | 'power'>('free');
   const [isPwaInstalled, setIsPwaInstalled] = useState(false);
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [editingCatName, setEditingCatName] = useState('');
@@ -212,87 +214,47 @@ export default function Settings({
         {/* Right commercial packages and PWA installation panels */}
         <div className="md:col-span-8 space-y-8">
           
-          {/* SaaS Tiers Column */}
-          <section className="space-y-4">
+          {/* Quick links to sub-pages */}
+          <section className="space-y-3">
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-              Commercial Subscription Plans
+              {lang === 'zh-TW' ? '進階設定' : 'Advanced Settings'}
             </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
-              {/* Plan 1 - Free */}
-              <div className={`p-4 border rounded-xl space-y-3 relative flex flex-col justify-between ${
-                activePlan === 'free' 
-                  ? 'border-stone-950 dark:border-stone-100 bg-stone-50/40 dark:bg-stone-900/10' 
-                  : 'border-stone-200 dark:border-stone-800'
-              }`}>
-                <div className="space-y-2">
-                  <span className="block font-sans font-bold text-stone-800 dark:text-stone-200">{t.planFree}</span>
-                  <span className="block text-xl font-bold text-stone-900 dark:text-stone-100">$0</span>
-                  <p className="text-[10px] text-stone-400 leading-relaxed">Basic captures for early quantitative builders.</p>
-                  <ul className="space-y-1 pt-1 text-[10.5px] text-stone-600 dark:text-stone-400">
-                    <li className="flex items-center gap-1.5">✓ 3 Projects</li>
-                    <li className="flex items-center gap-1.5">✓ 100 Captures</li>
-                    <li className="flex items-center gap-1.5">✓ Basic Prompt Output</li>
-                  </ul>
-                </div>
-                <button 
-                  onClick={() => setActivePlan('free')}
-                  className="w-full mt-3 py-1 bg-stone-100 dark:bg-stone-900 hover:bg-stone-200 text-stone-900 dark:text-white rounded-md text-[10px] font-semibold cursor-pointer"
-                >
-                  {activePlan === 'free' ? 'Active' : 'Choose'}
-                </button>
-              </div>
-
-              {/* Plan 2 - Pro */}
-              <div className={`p-4 border rounded-xl space-y-3 relative flex flex-col justify-between ${
-                activePlan === 'pro' 
-                  ? 'border-stone-950 dark:border-stone-100 bg-stone-50/40 dark:bg-stone-900/10' 
-                  : 'border-stone-200 dark:border-stone-800'
-              }`}>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-sans font-bold text-stone-850 dark:text-stone-150">{t.planPro}</span>
-                    <span className="text-[9px] font-sans font-semibold px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600">Popular</span>
+            <div className="space-y-2">
+              <button
+                onClick={onNavigatePlan}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-xs font-sans hover:border-stone-400 dark:hover:border-stone-700 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <CreditCard className="w-4 h-4 text-stone-400" />
+                  <div className="text-left">
+                    <p className="font-semibold text-stone-800 dark:text-stone-200">
+                      {lang === 'zh-TW' ? '方案與用量' : 'Plan & Usage'}
+                    </p>
+                    <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">
+                      {lang === 'zh-TW' ? '查看用量、升級或切換方案' : 'View usage and manage your subscription'}
+                    </p>
                   </div>
-                  <span className="block text-xl font-bold text-stone-900 dark:text-stone-100">$19</span>
-                  <p className="text-[10px] text-stone-400 leading-relaxed">Multi-source parsing and automated knowledge graphs.</p>
-                  <ul className="space-y-1 pt-1 text-[10.5px] text-stone-600 dark:text-stone-400">
-                    <li className="flex items-center gap-1.5">✓ Unlimited Projects</li>
-                    <li className="flex items-center gap-1.5">✓ PDF & Video Transcripts</li>
-                    <li className="flex items-center gap-1.5">✓ Knowledge Graph</li>
-                  </ul>
                 </div>
-                <button 
-                  onClick={() => setActivePlan('pro')}
-                  className="w-full mt-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-[10px] font-semibold cursor-pointer"
-                >
-                  {activePlan === 'pro' ? 'Active' : 'Upgrade'}
-                </button>
-              </div>
+                <Zap className="w-3.5 h-3.5 text-stone-300 dark:text-stone-700 group-hover:text-stone-500 dark:group-hover:text-stone-400" />
+              </button>
 
-              {/* Plan 3 - Power */}
-              <div className={`p-4 border rounded-xl space-y-3 relative flex flex-col justify-between ${
-                activePlan === 'power' 
-                  ? 'border-stone-950 dark:border-stone-100 bg-stone-50/40 dark:bg-stone-900/10' 
-                  : 'border-stone-200 dark:border-stone-800'
-              }`}>
-                <div className="space-y-2">
-                  <span className="block font-sans font-bold text-stone-850 dark:text-stone-150">{t.planPower}</span>
-                  <span className="block text-xl font-bold text-stone-900 dark:text-stone-100">$49</span>
-                  <p className="text-[10px] text-stone-400 leading-relaxed">BYOK Advanced model controls and team libraries.</p>
-                  <ul className="space-y-1 pt-1 text-[10.5px] text-stone-600 dark:text-stone-400">
-                    <li className="flex items-center gap-1.5">✓ BYOK (Bring Your Own Key)</li>
-                    <li className="flex items-center gap-1.5">✓ Team Sharing</li>
-                    <li className="flex items-center gap-1.5">✓ Bulk CSV/JSON Import</li>
-                  </ul>
+              <button
+                onClick={onNavigateApiKeys}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-xs font-sans hover:border-stone-400 dark:hover:border-stone-700 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldAlert className="w-4 h-4 text-stone-400" />
+                  <div className="text-left">
+                    <p className="font-semibold text-stone-800 dark:text-stone-200">
+                      {lang === 'zh-TW' ? 'Advanced Model Control（BYOK）' : 'Advanced Model Control (BYOK)'}
+                    </p>
+                    <p className="text-[10px] text-stone-400 dark:text-stone-500 mt-0.5">
+                      {lang === 'zh-TW' ? '使用自己的 API Key，Power 方案限定' : 'Bring your own API key — Power Plan only'}
+                    </p>
+                  </div>
                 </div>
-                <button 
-                  onClick={() => setActivePlan('power')}
-                  className="w-full mt-3 py-1 bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 rounded-md text-[10px] font-semibold cursor-pointer"
-                >
-                  {activePlan === 'power' ? 'Active' : 'Select'}
-                </button>
-              </div>
+                <Zap className="w-3.5 h-3.5 text-stone-300 dark:text-stone-700 group-hover:text-stone-500 dark:group-hover:text-stone-400" />
+              </button>
             </div>
           </section>
 

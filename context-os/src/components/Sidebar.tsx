@@ -9,7 +9,7 @@ import {
   FileCode2, 
   Settings,
   Share2,
-  Sparkles
+  LogOut
 } from 'lucide-react';
 import { TRANSLATIONS } from '../data';
 import { Language } from '../types';
@@ -19,9 +19,11 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void;
   lang: Language;
   sourcesCount: number;
+  currentUser?: { name?: string; email?: string } | null;
+  onLogout?: () => void;
 }
 
-export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount, currentUser, onLogout }: SidebarProps) {
   const t = TRANSLATIONS[lang];
 
   const menuItems = [
@@ -100,17 +102,26 @@ export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount }:
       {/* Account Info / Footer */}
       <div className="p-4 border-t border-stone-150 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-800 flex items-center justify-center font-sans text-xs font-medium text-stone-900 dark:text-stone-100">
-            KC
+          <div className="w-8 h-8 rounded-full bg-stone-200 dark:bg-stone-800 flex items-center justify-center font-sans text-xs font-bold text-stone-900 dark:text-stone-100 shrink-0">
+            {currentUser?.name?.charAt(0)?.toUpperCase() || currentUser?.email?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-sans text-xs font-medium text-stone-900 dark:text-stone-50 truncate">
-              Kelvin Chen
+              {currentUser?.name || 'User'}
             </p>
             <p className="text-[10px] text-stone-400 dark:text-stone-500 truncate leading-tight">
-              kelvinchenrichai@gmail.com
+              {currentUser?.email || ''}
             </p>
           </div>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              title={lang === 'zh-TW' ? '登出' : 'Sign out'}
+              className="shrink-0 p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </aside>

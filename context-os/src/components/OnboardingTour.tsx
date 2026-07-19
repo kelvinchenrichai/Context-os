@@ -76,13 +76,13 @@ const TOUR_STEPS: TourStep[] = [
     tab: 'dashboard'
   },
   {
-    targetId: 'none',
-    titleZh: '設定與引導 ⚙️',
-    titleEn: 'Settings & Help ⚙️',
-    contentZh: '大功告成！如果您在未來有任何需要，可以隨時在設定頁面，或是首頁右上角的問號按鈕，重新開啟此功能。現在就去貼上第一個連結吧！',
-    contentEn: 'You are ready! If you ever need assistance or wish to repeat this walkthrough, simply trigger it via the "?" icon in the top header or from the Settings panel.',
-    placement: 'center',
-    tab: 'dashboard'
+    targetId: 'btn-trigger-tour-settings',
+    titleZh: '忘記了嗎？隨時重看 ⚙️',
+    titleEn: 'Need a reminder? Restart anytime ⚙️',
+    contentZh: '大功告成！這個導覽只會出現一次。如果之後忘記某個功能，可以到「設定」頁面找到「重新啟動功能導覽」按鈕，隨時重看。現在就去貼上第一個連結吧！',
+    contentEn: 'All done! This tour only appears once. If you ever forget something, go to Settings and click "Restart Walkthrough" to replay it anytime. Now go paste your first link!',
+    placement: 'right',
+    tab: 'settings'
   }
 ];
 

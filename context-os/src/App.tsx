@@ -99,12 +99,15 @@ export default function App() {
   // ─── Auth check on mount ──────────────────────────────────────────────────
 
   useEffect(() => {
-    // Handle OAuth callback token in URL
+    // Handle OAuth callback token in URL — works with both /auth/callback?token=...
+    // and any other route that might carry a ?token= param
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get('token');
     if (urlToken) {
       setToken(urlToken);
+      // Clean URL and redirect to dashboard
       window.history.replaceState({}, '', '/');
+      navigate('/', { replace: true });
     }
 
     const token = getToken();
@@ -483,6 +486,16 @@ export default function App() {
                 onAddKey={handleAddApiKey} onDeleteKey={handleDeleteApiKey}
                 onToggleKey={handleToggleApiKey} onBack={() => navigate('/settings')}
                 isPowerPlan={plan === 'power'} />
+            } />
+            <Route path="/auth/callback" element={
+              <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
+                <div className="text-center space-y-3">
+                  <div className="w-8 h-8 rounded-lg bg-stone-900 dark:bg-stone-100 mx-auto flex items-center justify-center">
+                    <span className="font-mono text-sm font-bold text-white dark:text-stone-900">C</span>
+                  </div>
+                  <p className="text-xs text-stone-400">登入中...</p>
+                </div>
+              </div>
             } />
             <Route path="*" element={<div className="p-8 text-xs text-stone-500">Not found.</div>} />
           </Routes>

@@ -1,6 +1,0 @@
-{
-  "name": "Context OS",
-  "description": "A premium context workspace to turn scattered links, files, and references into AI-ready project memory.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

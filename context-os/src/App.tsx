@@ -20,6 +20,7 @@ import PwaInstallPrompt from './components/PwaInstallPrompt';
 
 // Pages
 import LoginPage from './pages/LoginPage';
+import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import CreateProject from './pages/CreateProject';
@@ -99,17 +100,6 @@ export default function App() {
   // ─── Auth check on mount ──────────────────────────────────────────────────
 
   useEffect(() => {
-    // Handle OAuth callback token in URL — works with both /auth/callback?token=...
-    // and any other route that might carry a ?token= param
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get('token');
-    if (urlToken) {
-      setToken(urlToken);
-      // Clean URL and redirect to dashboard
-      window.history.replaceState({}, '', '/');
-      navigate('/', { replace: true });
-    }
-
     const token = getToken();
     if (!token) {
       setAuthLoading(false);
@@ -404,6 +394,11 @@ export default function App() {
         </div>
       </div>
     );
+  }
+
+  // Always allow /auth/callback to render regardless of login state
+  if (location.pathname === '/auth/callback') {
+    return <AuthCallback onLogin={handleLogin} />;
   }
 
   if (!isLoggedIn) {

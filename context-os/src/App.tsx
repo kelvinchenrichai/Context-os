@@ -100,6 +100,13 @@ export default function App() {
   // ─── Auth check on mount ──────────────────────────────────────────────────
 
   useEffect(() => {
+    // If this is the OAuth callback page, skip the normal auth check
+    // and let AuthCallback handle everything
+    if (window.location.pathname === '/auth/callback') {
+      setAuthLoading(false);
+      return;
+    }
+
     const token = getToken();
     if (!token) {
       setAuthLoading(false);

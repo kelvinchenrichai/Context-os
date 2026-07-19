@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { setToken } from '../api';
 
 interface AuthCallbackProps {
@@ -7,7 +7,6 @@ interface AuthCallbackProps {
 }
 
 export default function AuthCallback({ onLogin }: AuthCallbackProps) {
-  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -16,13 +15,11 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
 
     if (token) {
       setToken(token);
-      onLogin().then(() => {
-        navigate('/', { replace: true });
-      }).catch(() => {
-        navigate('/', { replace: true });
-      });
+      // Force a full page reload to `/` so the main App re-initialises
+      // with the new token in localStorage — avoids React state timing issues
+      window.location.href = '/';
     } else {
-      navigate('/', { replace: true });
+      window.location.href = '/';
     }
   }, []);
 

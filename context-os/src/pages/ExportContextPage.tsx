@@ -57,7 +57,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
     prompt += `CONTEXT OS: PROJECT CONTEXT PACKAGE\n`;
     prompt += `PROJECT: ${project.name.toUpperCase()}\n`;
     prompt += `TYPE: ${project.type.toUpperCase()}\n`;
-    prompt += `GENERATED TIMESTAMP: 2026-07-09 05:34 UTC\n`;
+    prompt += `GENERATED TIMESTAMP: ${new Date().toISOString().replace('T', ' ').slice(0, 16)} UTC\n`;
     prompt += `=========================================\n\n`;
 
     if (includeSummary) {

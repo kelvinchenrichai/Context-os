@@ -81,11 +81,9 @@ export default function Settings({
   };
 
   const handleInstallPwaMock = () => {
-    setIsPwaInstalled(true);
-    alert(lang === 'zh-TW' 
-      ? 'PWA 已成功安裝至模擬桌面！開啟手機分享選單可直接偵測「Context OS」儲存。' 
-      : 'PWA mock installed! Mobile Share Target endpoint registered at /share.'
-    );
+    alert(lang === 'zh-TW'
+      ? 'iOS Safari：點下方「分享」→「加入主畫面」\nAndroid Chrome：點網址列右邊的安裝圖示，或選單→「安裝應用程式」'
+      : 'iOS Safari: tap Share → Add to Home Screen\nAndroid Chrome: tap the install icon in the address bar, or Menu → Install App');
   };
 
   return (

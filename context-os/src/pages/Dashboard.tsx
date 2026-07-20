@@ -92,7 +92,7 @@ export default function Dashboard({
           )}
           <div className="flex items-center gap-2 text-stone-400 dark:text-stone-500 font-mono text-[10px] uppercase tracking-wider font-semibold">
             <Clock className="w-3.5 h-3.5" />
-            <span>UTC 2026-07-09</span>
+            <span>{new Date().toLocaleDateString(lang === 'zh-TW' ? 'zh-TW' : 'en-US', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone })}</span>
           </div>
         </div>
       </div>

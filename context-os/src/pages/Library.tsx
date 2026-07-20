@@ -321,14 +321,29 @@ export default function Library({
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2.5">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      {/* Batch checkbox */}
-                      {batchMode && (
-                        <div className={`shrink-0 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                          isSelected ? 'bg-indigo-500 border-indigo-500' : 'border-stone-300 dark:border-stone-600'
-                        }`}>
-                          {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                        </div>
-                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (batchMode) {
+                            toggleSelect(source.id);
+                          } else {
+                            onToggleIncludeInContext(source.id);
+                          }
+                        }}
+                        className={`shrink-0 p-1.5 rounded-md border transition-all ${
+                          batchMode
+                            ? isSelected
+                              ? 'bg-indigo-500 border-indigo-500 text-white'
+                              : 'border-stone-300 dark:border-stone-600 text-transparent hover:border-indigo-400'
+                            : source.includeInContext
+                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
+                              : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
+                        }`}
+                        title={batchMode ? (isSelected ? '取消選取' : '選取') : 'Include in Context Package'}
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </button>
                       <div className="p-2 bg-stone-50 dark:bg-stone-850 rounded text-stone-600 dark:text-stone-300 shrink-0">
                         {getPlatformIcon(source.platform)}
                       </div>
@@ -341,23 +356,6 @@ export default function Library({
                         </span>
                       </div>
                     </div>
-
-                    <button
-                      id={`lib-toggle-ctx-${source.id}`}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleIncludeInContext(source.id);
-                      }}
-                      className={`p-1.5 rounded-md border ${
-                        source.includeInContext
-                          ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
-                          : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
-                      } transition-all cursor-pointer`}
-                      title="Include in Context Package"
-                    >
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                    </button>
                   </div>
 
                   <p className="font-sans text-[11px] text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed">

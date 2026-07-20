@@ -399,14 +399,14 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
         </div>
 
         {/* Toggles */}
-        <div className="space-y-3 pt-1">
+        <div className="space-y-2.5 pt-1">
           {[
             {
               id: 'analyze',
               checked: analyzeNow,
               onChange: () => setAnalyzeNow(v => !v),
               label: zh ? '立即 AI 分析' : 'Analyze with AI now',
-              desc: zh ? 'Gemini 自動產生摘要、重點與標籤建議' : 'Gemini generates summary, key points & tag suggestions',
+              desc: zh ? 'Groq AI 自動產生摘要、重點與標籤建議' : 'Groq AI generates summary, key points & tag suggestions',
               icon: <Sparkles className="w-3.5 h-3.5 text-indigo-500" />,
             },
             {
@@ -418,20 +418,24 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
               icon: <Link2 className="w-3.5 h-3.5 text-stone-400" />,
             },
           ].map(item => (
-            <div key={item.id} className="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl">
+            <label
+              key={item.id}
+              htmlFor={`toggle-${item.id}`}
+              className="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl cursor-pointer hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
+            >
               {item.icon}
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-sans font-semibold text-stone-800 dark:text-stone-200">{item.label}</p>
                 <p className="text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">{item.desc}</p>
               </div>
-              <button
-                type="button"
-                onClick={item.onChange}
-                className={`shrink-0 w-9 h-5 rounded-full transition-colors relative ${item.checked ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
-              >
-                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-stone-900 transition-transform shadow-sm ${item.checked ? 'translate-x-4' : 'translate-x-0.5'}`} />
-              </button>
-            </div>
+              <input
+                id={`toggle-${item.id}`}
+                type="checkbox"
+                checked={item.checked}
+                onChange={item.onChange}
+                className="w-4 h-4 rounded accent-stone-900 dark:accent-stone-100 shrink-0 cursor-pointer"
+              />
+            </label>
           ))}
         </div>
 

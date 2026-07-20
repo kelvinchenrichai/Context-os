@@ -226,12 +226,12 @@ export default function SourceDetail({
                 )}
                 
                 <a 
-                  href={source.url} 
+                  href={source.url?.replace(/&amp;/g, '&')} 
                   target="_blank" 
                   rel="noreferrer" 
                   className="flex items-center gap-1 text-[11px] font-mono text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors mt-1.5"
                 >
-                  <span className="truncate max-w-sm md:max-w-md">{source.url}</span>
+                  <span className="truncate max-w-sm md:max-w-md">{source.url?.replace(/&amp;/g, '&')}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
@@ -376,6 +376,23 @@ export default function SourceDetail({
                   )}
                 </div>
               </div>
+
+              {/* Upload timestamp */}
+              <div>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium mb-1">
+                  {zh ? '上傳時間' : 'Saved at'}
+                </span>
+                <span className="text-[11px] font-mono text-stone-600 dark:text-stone-400">
+                  {source.createdAt
+                    ? new Date(source.createdAt).toLocaleString(zh ? 'zh-TW' : 'en-US', {
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit',
+                        hour12: false,
+                      })
+                    : '—'}
+                </span>
+              </div>
+
             </div>
           </div>
         </div>

@@ -408,7 +408,7 @@ export default function SourceDetail({
             {/* User Note annotation */}
             <div className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2">
               <span className="block text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                Personal Annotation / Note
+                {zh ? '個人備註' : 'Personal Annotation / Note'}
               </span>
               {isEditing ? (
                 <textarea
@@ -420,7 +420,7 @@ export default function SourceDetail({
                 />
               ) : (
                 <p className="font-sans text-xs text-stone-600 dark:text-stone-300 italic bg-stone-50/50 dark:bg-stone-950/40 p-3 rounded-lg border border-stone-100 dark:border-stone-850">
-                  {source.note || 'No custom annotations written yet. Click edit to add notes or thoughts.'}
+                  {source.note || (zh ? '尚未新增備註，點「編輯」來加入想法或用途。' : 'No custom annotations written yet. Click edit to add notes or thoughts.')}
                 </p>
               )}
             </div>
@@ -430,11 +430,11 @@ export default function SourceDetail({
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <span className="block text-[10px] font-mono font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider">
-                  AI Context Summary
+                  {zh ? 'AI 摘要' : 'AI Context Summary'}
                 </span>
               </div>
               <p className="font-sans text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
-                {source.aiSummary || 'Analysis pending... Use re-analyze to run Gemini model over raw metadata.'}
+                {source.aiSummary || (zh ? '尚未分析，點右上角重新整理按鈕來執行 AI 分析。' : 'Analysis pending... Use re-analyze to run AI model over raw metadata.')}
               </p>
             </div>
 
@@ -442,7 +442,7 @@ export default function SourceDetail({
             {source.aiKeyPoints && source.aiKeyPoints.length > 0 && (
               <div className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2">
                 <span className="block text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                  Core Technical Takeaways
+                  {zh ? 'AI 重點整理' : 'Core Technical Takeaways'}
                 </span>
                 <ul className="list-disc pl-4 space-y-1.5 text-xs font-sans text-stone-600 dark:text-stone-300">
                   {source.aiKeyPoints.map((pt, idx) => (
@@ -464,7 +464,7 @@ export default function SourceDetail({
             <div className="space-y-3.5">
               {/* Belongs to Project */}
               <div>
-                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">Workspace Project</span>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">{zh ? '所屬專案' : 'Workspace Project'}</span>
                 {matchedProj ? (
                   <div className="flex items-center gap-1.5 mt-1 font-semibold text-stone-800 dark:text-stone-200">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: matchedProj.color }} />
@@ -477,7 +477,7 @@ export default function SourceDetail({
 
               {/* Classification Category */}
               <div>
-                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">Category</span>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">{zh ? '分類' : 'Category'}</span>
                 <span className="font-semibold text-stone-800 dark:text-stone-200 mt-1 block">
                   {source.category}
                 </span>
@@ -485,7 +485,7 @@ export default function SourceDetail({
 
               {/* Importance level */}
               <div>
-                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">Importance Level</span>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">{zh ? '重要程度' : 'Importance Level'}</span>
                 {isEditing ? (
                   <select
                     id="edit-source-importance"
@@ -513,7 +513,7 @@ export default function SourceDetail({
 
               {/* Inclusion in Context Pack */}
               <div>
-                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">Context Package Status</span>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">{zh ? 'Context 狀態' : 'Context Package Status'}</span>
                 <button
                   id="btn-detail-toggle-ctx"
                   onClick={() => onUpdate(source.id, { includeInContext: !source.includeInContext })}
@@ -523,13 +523,13 @@ export default function SourceDetail({
                       : 'bg-transparent border-stone-200 dark:border-stone-800 text-stone-500'
                   }`}
                 >
-                  {source.includeInContext ? 'Included in Context Prompt' : 'Omitted (Click to include)'}
+                  {source.includeInContext ? (zh ? '已加入 Context' : 'Included in Context Prompt') : (zh ? '未加入（點擊加入）' : 'Omitted (Click to include)')}
                 </button>
               </div>
 
               {/* Tags distribution */}
               <div>
-                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium mb-1">Tags</span>
+                <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium mb-1">{zh ? '標籤' : 'Tags'}</span>
                 <div className="flex flex-wrap gap-1">
                   {source.tags.map((tag, idx) => (
                     <span 

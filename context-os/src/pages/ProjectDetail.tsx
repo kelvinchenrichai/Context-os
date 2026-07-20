@@ -162,7 +162,7 @@ export default function ProjectDetail({
           <div className="shrink-0 flex md:flex-col items-start gap-4 p-4 rounded-lg bg-stone-50/60 dark:bg-stone-950/40 border border-stone-150 dark:border-stone-850 w-full md:w-auto">
             <div className="text-center md:text-left">
               <span className="block text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                Sources
+                {lang === 'zh-TW' ? '來源數量' : 'Sources'}
               </span>
               <span className="font-sans text-base font-bold text-stone-900 dark:text-stone-100">
                 {projectSources.length}
@@ -170,7 +170,7 @@ export default function ProjectDetail({
             </div>
             <div className="text-center md:text-left">
               <span className="block text-[10px] font-mono text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                Compiled Tags
+                {lang === 'zh-TW' ? '標籤' : 'Compiled Tags'}
               </span>
               <span className="font-sans text-xs font-semibold text-stone-600 dark:text-stone-300">
                 {project.tags.slice(0, 3).join(', ')}
@@ -228,13 +228,13 @@ export default function ProjectDetail({
                 : 'text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100'
             }`}
           >
-            {tab === 'overview' && 'Overview'}
-            {tab === 'sources' && `Sources (${projectSources.length})`}
-            {tab === 'knowledge' && 'Knowledge Memory'}
-            {tab === 'tags' && 'Tags Map'}
-            {tab === 'relations' && 'Relations'}
-            {tab === 'export' && 'Export Prompt'}
-            {tab === 'todo' && 'AI Action Items'}
+            {tab === 'overview' && (lang === 'zh-TW' ? '總覽' : 'Overview')}
+            {tab === 'sources' && (lang === 'zh-TW' ? `來源 (${projectSources.length})` : `Sources (${projectSources.length})`)}
+            {tab === 'knowledge' && (lang === 'zh-TW' ? '知識記憶' : 'Knowledge Memory')}
+            {tab === 'tags' && (lang === 'zh-TW' ? '標籤地圖' : 'Tags Map')}
+            {tab === 'relations' && (lang === 'zh-TW' ? '關聯' : 'Relations')}
+            {tab === 'export' && (lang === 'zh-TW' ? '匯出 Prompt' : 'Export Prompt')}
+            {tab === 'todo' && (lang === 'zh-TW' ? '待辦事項' : 'To-Do')}
           </button>
         ))}
       </div>
@@ -250,11 +250,11 @@ export default function ProjectDetail({
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-                    AI Project Overview & Memory Summary
+                    {lang === 'zh-TW' ? 'AI 專案總覽與記憶摘要' : 'AI Project Overview & Memory Summary'}
                   </h3>
                 </div>
                 <p className="font-sans text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-                  {project.summary || 'AI synthesis has evaluated standard characteristics of this namespace and mapped out relevant indexing triggers.'}
+                  {project.summary || (lang === 'zh-TW' ? 'AI 尚未生成摘要，新增資料並分析後會自動更新。' : 'AI synthesis has evaluated standard characteristics of this namespace and mapped out relevant indexing triggers.')}
                 </p>
                 <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-950 border border-stone-150 dark:border-stone-850 space-y-2.5">
                   <span className="block text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
@@ -275,7 +275,7 @@ export default function ProjectDetail({
                 </h3>
                 {projectSources.length === 0 ? (
                   <div className="text-center py-8 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
-                    <p className="text-xs text-stone-400">No sources indexed yet.</p>
+                    <p className="text-xs text-stone-400">{lang === 'zh-TW' ? '尚未新增任何來源。' : 'No sources indexed yet.'}</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -331,7 +331,7 @@ export default function ProjectDetail({
                   <div>
                     <span className="block text-[10px] text-stone-400 dark:text-stone-500 font-medium">Indexed Memory Ratio</span>
                     <span className="font-sans font-semibold text-stone-800 dark:text-stone-200">
-                      {projectSources.filter(s => s.isAnalyzed).length} / {projectSources.length} Items ready
+                      {projectSources.filter(s => s.isAnalyzed).length} / {projectSources.length} {lang === 'zh-TW' ? '筆已分析' : 'Items ready'}
                     </span>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function ProjectDetail({
         {activeTab === 'sources' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between text-xs font-sans text-stone-500">
-              <span>{projectSources.length} resources captured in this namespace</span>
+              <span>{projectSources.length} {lang === 'zh-TW' ? '筆資料已收藏在此專案' : 'resources captured in this namespace'}</span>
               <span>Click to view AI summary & metadata</span>
             </div>
 

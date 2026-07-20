@@ -231,7 +231,7 @@ export default function Library({
               onChange={(e) => setSelectedProjectId(e.target.value)}
               className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-850 rounded-lg p-2 font-medium text-stone-700 dark:text-stone-300 focus:outline-none"
             >
-              <option value="all">All Projects</option>
+              <option value="all">{zh ? '所有專案' : 'All Projects'}</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
@@ -249,7 +249,7 @@ export default function Library({
               onChange={(e) => setSelectedPlatform(e.target.value)}
               className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-850 rounded-lg p-2 font-medium text-stone-700 dark:text-stone-300 focus:outline-none"
             >
-              <option value="all">All Platforms</option>
+              <option value="all">{zh ? '所有平台' : 'All Platforms'}</option>
               <option value="github">GitHub</option>
               <option value="youtube">YouTube</option>
               <option value="instagram">Instagram</option>
@@ -270,7 +270,7 @@ export default function Library({
               onChange={(e) => setSelectedImportance(e.target.value)}
               className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-850 rounded-lg p-2 font-medium text-stone-700 dark:text-stone-300 focus:outline-none"
             >
-              <option value="all">All Importance</option>
+              <option value="all">{zh ? '所有重要程度' : 'All Importance'}</option>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
@@ -281,7 +281,7 @@ export default function Library({
           {/* Status Filter */}
           <div className="space-y-1">
             <span className="block text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-              Analysis Status
+              {zh ? '分析狀態' : 'Analysis Status'}
             </span>
             <select
               id="lib-filter-status"
@@ -289,9 +289,9 @@ export default function Library({
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-850 rounded-lg p-2 font-medium text-stone-700 dark:text-stone-300 focus:outline-none"
             >
-              <option value="all">All Status</option>
-              <option value="analyzed">Ready (Indexed)</option>
-              <option value="pending">Analyzing (Pending)</option>
+              <option value="all">{zh ? '所有狀態' : 'All Status'}</option>
+              <option value="analyzed">{zh ? '已分析' : 'Ready (Indexed)'}</option>
+              <option value="pending">{zh ? '待分析' : 'Analyzing (Pending)'}</option>
             </select>
           </div>
         </div>
@@ -300,7 +300,7 @@ export default function Library({
       {/* Grid of Results */}
       {filteredSources.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
-          <p className="text-xs text-stone-400">No resources found matching the specified filters.</p>
+          <p className="text-xs text-stone-400">{zh ? '找不到符合篩選條件的資料。' : 'No resources found matching the specified filters.'}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -388,7 +388,7 @@ export default function Library({
                   </div>
 
                   <span className="text-[10px] font-mono text-stone-400 dark:text-stone-600">
-                    {source.isAnalyzed ? 'Indexed' : 'Pending'}
+                    {source.isAnalyzed ? (zh ? '已分析' : 'Indexed') : (zh ? '待分析' : 'Pending')}
                   </span>
                 </div>
               </div>

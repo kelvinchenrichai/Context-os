@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, ArrowRight, ArrowLeft, X, Eye, HelpCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, X, Sparkles, FolderPlus, Link, Database, CheckCircle2 } from 'lucide-react';
 import { Language } from '../types';
-
-export interface TourStep {
-  targetId: string;
-  titleZh: string;
-  titleEn: string;
-  contentZh: string;
-  contentEn: string;
-  placement: 'top' | 'bottom' | 'left' | 'right' | 'center';
-  tab?: string;
-}
 
 interface OnboardingTourProps {
   lang: Language;
@@ -20,70 +10,114 @@ interface OnboardingTourProps {
   onClose: () => void;
 }
 
+interface TourStep {
+  targetId: string;
+  titleZh: string;
+  titleEn: string;
+  contentZh: string;
+  contentEn: string;
+  placement: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  tab?: string;
+  actionZh?: string;
+  actionEn?: string;
+  onAction?: (setActiveTab: (tab: string) => void) => void;
+  icon?: React.ReactNode;
+}
+
 const TOUR_STEPS: TourStep[] = [
+  // ── Step 1: Welcome ────────────────────────────────────────────────────────
   {
     targetId: 'none',
-    titleZh: '歡迎使用 Context OS 🧠',
-    titleEn: 'Welcome to Context OS 🧠',
-    contentZh: '這是一個專利級的 AI 專案語境管理系統。它可以幫你將分散的網誌、GitHub 代碼庫、PDF 文件與 YouTube 影片，打包成 ChatGPT、Claude 或 Cursor 最愛讀的結構化知識 Context。讓我們花 60 秒帶您熟悉核心功能！',
-    contentEn: 'A professional AI context orchestrator. It compiles scattered articles, codebases, PDFs, and videos into dense, structured, LLM-readable background prompts for ChatGPT, Claude, or Cursor. Let us show you around in 60 seconds!',
+    titleZh: '👋 歡迎使用 Context OS',
+    titleEn: '👋 Welcome to Context OS',
+    contentZh: 'Context OS 幫你把分散在各地的連結、GitHub、PDF、影片，整理成 AI 可以直接理解的專案記憶。\n\n這個導覽會帶你完成三個最重要的步驟：建立專案 → 存入第一筆資料 → 了解如何管理。大約需要 2 分鐘。',
+    contentEn: 'Context OS organizes your scattered links, GitHub repos, PDFs and videos into AI-ready project memory.\n\nThis tour covers the 3 most important steps: Create a project → Save your first source → Manage your library. Takes about 2 minutes.',
     placement: 'center',
-    tab: 'dashboard'
+    tab: 'dashboard',
+    icon: <Sparkles className="w-6 h-6 text-indigo-500" />,
   },
+
+  // ── Step 2: Quick Capture Bar ─────────────────────────────────────────────
   {
     targetId: 'quick-capture-bar',
-    titleZh: '1. 閃電收藏列 ⚡',
-    titleEn: '1. Quick Capture Bar ⚡',
-    contentZh: '在此輸入或粘貼任何網址（YouTube 影片、GitHub Repo 或是 PDF / 網頁連結）。系統將自動爬取網頁，並使用內建 AI 模型產生完整的結構化總結。',
-    contentEn: 'Paste any repository link, YouTube video URL, PDF address, or article. The server-side engine will automatically download, parse, and generate highly compact summaries.',
+    titleZh: '⚡ 快速收藏列',
+    titleEn: '⚡ Quick Capture Bar',
+    contentZh: '這裡是最快的存入方式。直接貼上任何網址（YouTube、GitHub、IG、一般網頁），系統會自動偵測來源類型，然後讓你選擇要放進哪個專案。',
+    contentEn: 'The fastest way to save content. Paste any URL (YouTube, GitHub, Instagram, any webpage) and the system automatically detects the source type, then lets you choose which project to add it to.',
     placement: 'bottom',
-    tab: 'dashboard'
+    tab: 'dashboard',
   },
-  {
-    targetId: 'usage-quota-metric-card',
-    titleZh: '2. 使用量度量儀 📊',
-    titleEn: '2. Live Quota Gauge 📊',
-    contentZh: '這裡會動態顯示您的上傳使用量與剩餘額度。我們預先為每位用戶提供 100 筆免費 AI 解析空間，確保您的專案記憶庫不受限制。',
-    contentEn: 'Tracks your current source ingestion and analyzed items. Each account gets a dedicated 100-source quota on our free-tier memory cluster to host your dynamic research base.',
-    placement: 'bottom',
-    tab: 'dashboard'
-  },
+
+  // ── Step 3: Go create a project ───────────────────────────────────────────
   {
     targetId: 'sidebar-item-projects',
-    titleZh: '3. 專案看板 📂',
-    titleEn: '3. Project Memories 📂',
-    contentZh: '在這裡分門別類建立並整理不同的專案記憶。例如建立「前端開發」、「AI Agent 研究」，讓每個專案的語境彼此獨立、互不干擾。',
-    contentEn: 'Create separate project clusters to organize your research. Grouping sources under discrete projects prevents context contamination and organizes different developer assets.',
+    titleZh: '📂 第一步：建立你的第一個專案',
+    titleEn: '📂 Step 1: Create your first project',
+    contentZh: '在存入任何資料之前，先建立一個專案來組織它們。點「專案列表」，然後點右上角的「建立新專案」按鈕。\n\n例如：「AI 研究」、「行銷素材」、「交易策略」、「個人學習」。',
+    contentEn: 'Before saving any content, create a project to organize it. Click "Projects" then the "Create new project" button in the top right.\n\nExamples: "AI Research", "Marketing Assets", "Trading Strategy", "Personal Learning".',
     placement: 'right',
-    tab: 'dashboard'
+    tab: 'projects',
+    actionZh: '去建立專案',
+    actionEn: 'Go create a project',
+    onAction: (setActiveTab) => setActiveTab('projects'),
+    icon: <FolderPlus className="w-6 h-6 text-emerald-500" />,
   },
+
+  // ── Step 4: Save a source ─────────────────────────────────────────────────
+  {
+    targetId: 'sidebar-item-save-url',
+    titleZh: '🔗 第二步：存入你的第一筆資料',
+    titleEn: '🔗 Step 2: Save your first source',
+    contentZh: '建立好專案之後，點「快速收藏」來存入資料。\n\n你可以貼上：\n• GitHub 網址（自動抓取 README）\n• YouTube 影片（自動取得標題和縮圖）\n• 任何網頁連結\n• IG Reels 或 TikTok 連結\n\n勾選「立即 AI 分析」，AI 會自動產生繁體中文摘要和標籤。',
+    contentEn: 'After creating a project, click "Capture" to save content.\n\nYou can paste:\n• GitHub URLs (auto-fetches README)\n• YouTube videos (auto-gets title & thumbnail)\n• Any webpage link\n• Instagram Reels or TikTok links\n\nCheck "Analyze with AI" for automatic Chinese summaries and tag suggestions.',
+    placement: 'right',
+    tab: 'save-url',
+    actionZh: '去存入資料',
+    actionEn: 'Go save a source',
+    onAction: (setActiveTab) => setActiveTab('save-url'),
+    icon: <Link className="w-6 h-6 text-blue-500" />,
+  },
+
+  // ── Step 5: Library ───────────────────────────────────────────────────────
   {
     targetId: 'sidebar-item-library',
-    titleZh: '4. 智能資料庫 🗄️',
-    titleEn: '4. Knowledge Base Library 🗄️',
-    contentZh: '收錄您所有已爬取的完整內容、代碼庫目錄結構與 AI 的逐字稿分析，支援全文检索、自訂標籤與逐字編輯。',
-    contentEn: 'View fully extracted transcripts, structured file hierarchies, and key tags. Use this tab to search, modify, or inspect parsed records in deep analytical detail.',
+    titleZh: '🗄️ 第三步：在資料庫管理你的內容',
+    titleEn: '🗄️ Step 3: Manage in Library',
+    contentZh: '所有存入的資料都會在這裡顯示。你可以：\n\n• 用專案、平台、重要程度來篩選\n• 搜尋標題、備註、AI 摘要\n• 點進任何一筆看 AI 分析結果\n• 用「批量操作」把資料移動到其他專案\n• 打勾按鈕控制哪些資料加入 AI Context',
+    contentEn: 'All your saved content appears here. You can:\n\n• Filter by project, platform, importance\n• Search titles, notes, AI summaries\n• Click any item to view AI analysis\n• Use "Select" to batch-move sources to other projects\n• Use the checkmark to control which sources go into AI Context',
     placement: 'right',
-    tab: 'dashboard'
+    tab: 'library',
+    actionZh: '去資料庫看看',
+    actionEn: 'Go to Library',
+    onAction: (setActiveTab) => setActiveTab('library'),
+    icon: <Database className="w-6 h-6 text-violet-500" />,
   },
+
+  // ── Step 6: Export ────────────────────────────────────────────────────────
   {
     targetId: 'sidebar-item-export',
-    titleZh: '5. 語境打包打包器 📦',
-    titleEn: '5. Context Packaging System 📦',
-    contentZh: '專案的核心靈魂！勾選想要匯入 AI 的多個文件與影片，一鍵將其編譯壓縮成一段完美的 Prompts。貼進 ChatGPT / Claude 後，大模型將對您的專案如指掌！',
-    contentEn: 'The core superpower! Select multiple processed URLs, PDF documents, or transcripts to compile them into a token-optimized Context prompt for immediate clipboard copying.',
+    titleZh: '📦 最後：匯出給 AI 使用',
+    titleEn: '📦 Finally: Export for AI',
+    contentZh: '把整個專案的知識打包成一個 Prompt，直接貼進 ChatGPT、Claude 或 Cursor，讓 AI 立刻理解你的專案背景，不用再重複解釋。\n\n這就是 Context OS 的核心價值：\n存好資料 → 一鍵匯出 → AI 秒懂你的專案。',
+    contentEn: "Package your entire project knowledge into one prompt. Paste it into ChatGPT, Claude, or Cursor and the AI instantly understands your project context — no more repeated explanations.\n\nThis is Context OS's core value:\nSave content → One-click export → AI understands your project instantly.",
     placement: 'right',
-    tab: 'dashboard'
+    tab: 'export',
+    actionZh: '去試試匯出',
+    actionEn: 'Try Export',
+    onAction: (setActiveTab) => setActiveTab('export'),
   },
+
+  // ── Step 7: Done ──────────────────────────────────────────────────────────
   {
-    targetId: 'btn-trigger-tour-settings',
-    titleZh: '忘記了嗎？隨時重看 ⚙️',
-    titleEn: 'Need a reminder? Restart anytime ⚙️',
-    contentZh: '大功告成！這個導覽只會出現一次。如果之後忘記某個功能，可以到「設定」頁面找到「重新啟動功能導覽」按鈕，隨時重看。現在就去貼上第一個連結吧！',
-    contentEn: 'All done! This tour only appears once. If you ever forget something, go to Settings and click "Restart Walkthrough" to replay it anytime. Now go paste your first link!',
-    placement: 'right',
-    tab: 'settings'
-  }
+    targetId: 'none',
+    titleZh: '✅ 你已經準備好了！',
+    titleEn: '✅ You\'re all set!',
+    contentZh: '你已經了解 Context OS 的核心流程。\n\n現在就開始：\n1. 建立第一個專案\n2. 貼上幾個你常用的連結\n3. 匯出給 AI 用\n\n如果之後忘記什麼功能，去「設定」頁面找「重新啟動功能導覽」按鈕。',
+    contentEn: "You now understand Context OS's core workflow.\n\nGet started now:\n1. Create your first project\n2. Paste a few links you use often\n3. Export to AI\n\nIf you ever forget something, go to Settings and click 'Restart Walkthrough'.",
+    placement: 'center',
+    tab: 'dashboard',
+    icon: <CheckCircle2 className="w-6 h-6 text-emerald-500" />,
+  },
 ];
 
 export default function OnboardingTour({
@@ -93,6 +127,7 @@ export default function OnboardingTour({
   isOpen,
   onClose
 }: OnboardingTourProps) {
+  const zh = lang === 'zh-TW';
   const [currentStep, setCurrentStep] = useState(0);
   const [coords, setCoords] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
   const resizeTimeout = useRef<number | null>(null);
@@ -101,53 +136,33 @@ export default function OnboardingTour({
 
   useEffect(() => {
     if (!isOpen) return;
-
-    // Auto-switch tab if specified for the step
     if (step.tab && activeTab !== step.tab) {
       setActiveTab(step.tab);
     }
 
     const calculatePosition = () => {
-      if (step.targetId === 'none') {
-        setCoords(null);
-        return;
-      }
-
+      if (step.targetId === 'none') { setCoords(null); return; }
       let el = document.getElementById(step.targetId);
-      
-      // Mobile fallback mapping sidebar IDs to bottom nav IDs
       if (!el && step.targetId.startsWith('sidebar-item-')) {
         const tabId = step.targetId.replace('sidebar-item-', '');
         el = document.getElementById(`bottom-nav-item-${tabId}`);
       }
-
       if (el) {
         const rect = el.getBoundingClientRect();
-        setCoords({
-          top: rect.top,
-          left: rect.left,
-          width: rect.width,
-          height: rect.height
-        });
-        
-        // Smooth scroll to view if not perfectly inside screen
+        setCoords({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         setCoords(null);
       }
     };
 
-    // Delay calculation slightly to allow layout and transitions to settle
     const timeoutId = window.setTimeout(calculatePosition, 250);
-
     const handleResize = () => {
       if (resizeTimeout.current) window.clearTimeout(resizeTimeout.current);
       resizeTimeout.current = window.setTimeout(calculatePosition, 100);
     };
-
     window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', calculatePosition);
-
     return () => {
       window.clearTimeout(timeoutId);
       if (resizeTimeout.current) window.clearTimeout(resizeTimeout.current);
@@ -162,135 +177,170 @@ export default function OnboardingTour({
     if (currentStep < TOUR_STEPS.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      localStorage.setItem('context_os_tour_completed', 'true');
-      onClose();
-      setCurrentStep(0);
+      handleClose();
     }
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
-    }
+    if (currentStep > 0) setCurrentStep(prev => prev - 1);
   };
 
-  const handleSkip = () => {
+  const handleClose = () => {
     localStorage.setItem('context_os_tour_completed', 'true');
     onClose();
     setCurrentStep(0);
   };
 
+  // ── Tooltip / card positioning ────────────────────────────────────────────
+
+  const CARD_W = 340;
+  const CARD_H_APPROX = 280;
+  const GAP = 16;
+
+  const getCardStyle = (): React.CSSProperties => {
+    if (!coords || step.placement === 'center') {
+      return {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: CARD_W,
+        zIndex: 10002,
+      };
+    }
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let top = 0, left = 0;
+    switch (step.placement) {
+      case 'bottom':
+        top = coords.top + coords.height + GAP;
+        left = coords.left + coords.width / 2 - CARD_W / 2;
+        break;
+      case 'top':
+        top = coords.top - CARD_H_APPROX - GAP;
+        left = coords.left + coords.width / 2 - CARD_W / 2;
+        break;
+      case 'right':
+        top = coords.top + coords.height / 2 - CARD_H_APPROX / 2;
+        left = coords.left + coords.width + GAP;
+        break;
+      case 'left':
+        top = coords.top + coords.height / 2 - CARD_H_APPROX / 2;
+        left = coords.left - CARD_W - GAP;
+        break;
+    }
+
+    // Clamp to viewport
+    left = Math.max(12, Math.min(left, vw - CARD_W - 12));
+    top = Math.max(12, Math.min(top, vh - CARD_H_APPROX - 12));
+
+    return { position: 'fixed', top, left, width: CARD_W, zIndex: 10002 };
+  };
+
   return (
     <div className="fixed inset-0 z-[10000] overflow-hidden pointer-events-none font-sans">
-      {/* Translucent Backdrop with click capture to prevent background clicks during tour */}
-      <div 
-        className={`absolute inset-0 transition-all duration-300 pointer-events-auto ${
-          coords 
-            ? 'bg-transparent' 
-            : 'bg-stone-950/30 dark:bg-black/50'
-        }`}
-        onClick={handleSkip}
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-stone-950/40 dark:bg-black/60 pointer-events-auto"
+        onClick={handleClose}
       />
 
-      {/* Pulsing Highlight Target overlay ring (Spotlight) */}
+      {/* Spotlight ring */}
       {coords && (
-        <div 
-          className="absolute border-2 border-amber-500 dark:border-amber-400 rounded-xl pointer-events-none transition-all duration-300 z-[10001]"
+        <div
+          className="absolute border-2 border-amber-400 dark:border-amber-500 rounded-xl pointer-events-none z-[10001] transition-all duration-300"
           style={{
             top: coords.top - 6,
             left: coords.left - 6,
             width: coords.width + 12,
             height: coords.height + 12,
-            boxShadow: '0 0 0 9999px rgba(12, 12, 14, 0.5), 0 0 15px rgba(245, 158, 11, 0.3)'
+            boxShadow: '0 0 0 9999px rgba(0,0,0,0.35)',
           }}
-        >
-          {/* Breathing highlight indicator */}
-          <div className="absolute inset-0 rounded-xl border border-amber-500 dark:border-amber-400 animate-ping opacity-65" />
-        </div>
+        />
       )}
 
-      {/* Guide dialog box */}
-      <div 
-        className="fixed pointer-events-auto transition-all duration-300 z-[10002] flex items-center justify-center"
-        style={{
-          left: '50%',
-          width: 'calc(100% - 32px)',
-          maxWidth: '350px',
-          // Smart positioning based on highlight target position
-          ...(!coords ? {
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-          } : {
-            ...(coords.top > window.innerHeight / 2 ? {
-              top: '72px',
-              transform: 'translateX(-50%)',
-            } : {
-              bottom: '84px',
-              transform: 'translateX(-50%)',
-            })
-          })
-        }}
+      {/* Tour card */}
+      <div
+        className="pointer-events-auto bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-2xl shadow-2xl overflow-hidden"
+        style={getCardStyle()}
+        onClick={e => e.stopPropagation()}
       >
-        <div className="w-full bg-white dark:bg-stone-900 border border-stone-250 dark:border-stone-800 rounded-2xl shadow-2xl p-5 flex flex-col gap-4 text-stone-900 dark:text-stone-100">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-stone-900 dark:text-stone-100">
-              <Sparkles className="w-4 h-4 text-amber-500 animate-pulse shrink-0" />
-              <h4 className="text-xs font-bold font-sans tracking-wide">
-                {lang === 'zh-TW' ? step.titleZh : step.titleEn}
-              </h4>
-            </div>
-            <button 
-              onClick={handleSkip}
-              className="p-1 rounded-full text-stone-400 dark:text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-700 dark:hover:text-stone-300 transition-colors"
-              title={lang === 'zh-TW' ? '跳過引導' : 'Skip'}
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-stone-100 dark:border-stone-800">
+          <div className="flex items-center gap-2.5">
+            {step.icon}
+            <h3 className="font-sans text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug">
+              {zh ? step.titleZh : step.titleEn}
+            </h3>
+          </div>
+          <button onClick={handleClose} className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 p-1">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="px-5 py-4">
+          <p className="text-xs font-sans text-stone-600 dark:text-stone-400 leading-relaxed whitespace-pre-line">
+            {zh ? step.contentZh : step.contentEn}
+          </p>
+        </div>
+
+        {/* Action button (optional) */}
+        {step.onAction && (
+          <div className="px-5 pb-3">
+            <button
+              onClick={() => { step.onAction!(setActiveTab); handleNext(); }}
+              className="w-full flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-colors"
             >
-              <X className="w-4 h-4" />
+              {zh ? step.actionZh : step.actionEn}
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
+        )}
 
-          {/* Description Text */}
-          <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed font-sans">
-            {lang === 'zh-TW' ? step.contentZh : step.contentEn}
-          </p>
+        {/* Footer: progress + nav */}
+        <div className="flex items-center justify-between px-5 py-3 bg-stone-50/60 dark:bg-stone-950/30 border-t border-stone-100 dark:border-stone-800">
+          {/* Progress dots */}
+          <div className="flex items-center gap-1.5">
+            {TOUR_STEPS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentStep(i)}
+                className={`rounded-full transition-all ${
+                  i === currentStep
+                    ? 'w-4 h-1.5 bg-indigo-500'
+                    : i < currentStep
+                      ? 'w-1.5 h-1.5 bg-emerald-400'
+                      : 'w-1.5 h-1.5 bg-stone-300 dark:bg-stone-700'
+                }`}
+              />
+            ))}
+          </div>
 
-          {/* Progress Indicator and Action Buttons */}
-          <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800/80">
-            <span className="text-[10px] font-mono text-stone-400 dark:text-stone-500 font-bold">
+          {/* Step counter + nav buttons */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono text-stone-400">
               {currentStep + 1} / {TOUR_STEPS.length}
             </span>
-
-            <div className="flex items-center gap-1.5">
-              {/* Skip button for non-final steps */}
-              {currentStep < TOUR_STEPS.length - 1 && (
-                <button 
-                  onClick={handleSkip}
-                  className="px-2.5 py-1.5 text-[10px] font-sans font-medium text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
-                >
-                  {lang === 'zh-TW' ? '跳過' : 'Skip'}
-                </button>
-              )}
-
-              {/* Prev button */}
-              {currentStep > 0 && (
-                <button 
-                  onClick={handlePrev}
-                  className="p-1.5 rounded-lg border border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300 transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                </button>
-              )}
-
-              {/* Next/Finish button */}
-              <button 
-                onClick={handleNext}
-                className="px-3 py-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-[10px] font-semibold flex items-center gap-1 hover:opacity-90 active:scale-95 transition-all shadow-sm"
+            {currentStep > 0 && (
+              <button
+                onClick={handlePrev}
+                className="p-1.5 rounded-lg border border-stone-200 dark:border-stone-700 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
               >
-                <span>{currentStep === TOUR_STEPS.length - 1 ? (lang === 'zh-TW' ? '開始使用' : 'Get Started') : (lang === 'zh-TW' ? '下一步' : 'Next')}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-3.5 h-3.5" />
               </button>
-            </div>
+            )}
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-1 px-3 py-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
+            >
+              {currentStep === TOUR_STEPS.length - 1
+                ? (zh ? '開始使用' : 'Get Started')
+                : (zh ? '繼續' : 'Next')}
+              {currentStep < TOUR_STEPS.length - 1 && <ArrowRight className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
       </div>

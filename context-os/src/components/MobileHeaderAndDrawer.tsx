@@ -11,8 +11,7 @@ import {
   Settings,
   Menu,
   X,
-  ChevronRight,
-  Sparkles
+  LogOut
 } from 'lucide-react';
 import { TRANSLATIONS } from '../data';
 import { Language } from '../types';
@@ -24,6 +23,8 @@ interface MobileHeaderAndDrawerProps {
   sourcesCount: number;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  currentUser?: { name?: string; email?: string } | null;
+  onLogout?: () => void;
 }
 
 export function MobileHeader({ 
@@ -65,7 +66,9 @@ export function MobileDrawer({
   lang,
   sourcesCount,
   isOpen,
-  setIsOpen
+  setIsOpen,
+  currentUser,
+  onLogout,
 }: MobileHeaderAndDrawerProps) {
   const t = TRANSLATIONS[lang];
 
@@ -164,16 +167,25 @@ export function MobileDrawer({
         <div className="p-4 border-t border-stone-200 dark:border-stone-850 bg-stone-50/50 dark:bg-stone-900/10">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-full bg-stone-200 dark:bg-stone-800 flex items-center justify-center font-sans text-xs font-bold text-stone-900 dark:text-stone-100">
-              KC
+              {currentUser?.name?.charAt(0)?.toUpperCase() || currentUser?.email?.charAt(0)?.toUpperCase() || 'U'}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-sans text-xs font-semibold text-stone-900 dark:text-stone-100 truncate">
-                Kelvin Chen
+                {currentUser?.name || 'User'}
               </p>
               <p className="text-[10px] text-stone-500 dark:text-stone-400 truncate leading-none mt-0.5">
-                kelvinchenrichai@gmail.com
+                {currentUser?.email || ''}
               </p>
             </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="shrink-0 p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                title={lang === 'zh-TW' ? '登出' : 'Sign out'}
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 

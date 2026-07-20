@@ -12,12 +12,16 @@ import {
   Github, 
   Video, 
   Globe2, 
-  Loader2 
+  Loader2,
+  FolderInput,
+  Link2,
+  X,
+  Plus
 } from 'lucide-react';
 import { Project, Source, Language, ImportanceLevel } from '../types';
 import { TRANSLATIONS } from '../data';
 import AIAnalysisStatus from '../components/AIAnalysisStatus';
-import { getToken } from '../api';
+import { getToken, getSourceProjects, moveSource, linkSource, unlinkSource } from '../api';
 
 const API_BASE = 'https://context-os-api.kelvinchenrichai.workers.dev';
 
@@ -27,6 +31,7 @@ interface SourceDetailProps {
   onBack: () => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, updatedData: Partial<Source>) => void;
+  onMoved?: () => void;
   lang: Language;
 }
 
@@ -35,7 +40,8 @@ export default function SourceDetail({
   projects, 
   onBack, 
   onDelete, 
-  onUpdate, 
+  onUpdate,
+  onMoved,
   lang 
 }: SourceDetailProps) {
   const t = TRANSLATIONS[lang];
@@ -45,9 +51,19 @@ export default function SourceDetail({
   const [source, setSource] = useState<Source>(initialSource);
   const [analyzing, setAnalyzing] = useState(false);
 
+  // Move / link state
+  const [linkedProjectIds, setLinkedProjectIds] = useState<string[]>([]);
+  const [showMovePanel, setShowMovePanel] = useState(false);
+  const [showLinkPanel, setShowLinkPanel] = useState(false);
+  const [movingTo, setMovingTo] = useState('');
+  const [linkingTo, setLinkingTo] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionMsg, setActionMsg] = useState('');
+
   useEffect(() => {
     const token = getToken();
     if (!token) return;
+    // Fetch fresh source data
     fetch(`${API_BASE}/api/v1/sources/${initialSource.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -64,6 +80,11 @@ export default function SourceDetail({
         }
       })
       .catch(() => {});
+
+    // Fetch linked projects
+    getSourceProjects(initialSource.id)
+      .then(data => setLinkedProjectIds(data.linkedProjectIds))
+      .catch(() => {});
   }, [initialSource.id]);
 
   const handleReAnalyze = async () => {
@@ -73,10 +94,7 @@ export default function SourceDetail({
     try {
       const res = await fetch(`${API_BASE}/api/v1/sources/analyze`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ sourceId: source.id }),
       });
       const data = await res.json() as any;
@@ -88,14 +106,44 @@ export default function SourceDetail({
           aiSuggestedTags: data.data.suggestedTags || [],
           isAnalyzed: true,
         }));
-        onUpdate(source.id, {
-          aiSummary: data.data.summary,
-          aiKeyPoints: data.data.keyPoints || [],
-          isAnalyzed: true,
-        });
+        onUpdate(source.id, { aiSummary: data.data.summary, aiKeyPoints: data.data.keyPoints || [], isAnalyzed: true });
       }
     } catch {}
     finally { setAnalyzing(false); }
+  };
+
+  const handleMove = async () => {
+    if (!movingTo || actionLoading) return;
+    setActionLoading(true);
+    try {
+      await moveSource(source.id, movingTo);
+      setActionMsg(zh ? '已移動！' : 'Moved!');
+      setTimeout(() => { setActionMsg(''); setShowMovePanel(false); onMoved?.(); onBack(); }, 1200);
+    } catch (e: any) {
+      setActionMsg(e.message || (zh ? '移動失敗' : 'Move failed'));
+    } finally { setActionLoading(false); }
+  };
+
+  const handleLink = async () => {
+    if (!linkingTo || actionLoading) return;
+    setActionLoading(true);
+    try {
+      await linkSource(source.id, linkingTo);
+      setLinkedProjectIds(prev => [...prev, linkingTo]);
+      setLinkingTo('');
+      setShowLinkPanel(false);
+      setActionMsg(zh ? '已加入專案！' : 'Linked!');
+      setTimeout(() => setActionMsg(''), 2000);
+    } catch (e: any) {
+      setActionMsg(e.message || (zh ? '加入失敗' : 'Link failed'));
+    } finally { setActionLoading(false); }
+  };
+
+  const handleUnlink = async (projectId: string) => {
+    try {
+      await unlinkSource(source.id, projectId);
+      setLinkedProjectIds(prev => prev.filter(id => id !== projectId));
+    } catch {}
   };
 
   // Edit states
@@ -182,6 +230,24 @@ export default function SourceDetail({
             }
           </button>
 
+          {/* Move to project */}
+          <button
+            onClick={() => { setShowMovePanel(v => !v); setShowLinkPanel(false); }}
+            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-indigo-600 hover:border-indigo-300 rounded-lg cursor-pointer transition-colors"
+            title={zh ? '移動到其他專案' : 'Move to project'}
+          >
+            <FolderInput className="w-4 h-4" />
+          </button>
+
+          {/* Link to project */}
+          <button
+            onClick={() => { setShowLinkPanel(v => !v); setShowMovePanel(false); }}
+            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-emerald-600 hover:border-emerald-300 rounded-lg cursor-pointer transition-colors"
+            title={zh ? '加入其他專案（共用）' : 'Link to another project'}
+          >
+            <Link2 className="w-4 h-4" />
+          </button>
+
           {/* Delete resource */}
           <button
             id="btn-source-delete"
@@ -197,6 +263,108 @@ export default function SourceDetail({
           </button>
         </div>
       </div>
+
+      {/* Action message toast */}
+      {actionMsg && (
+        <div className="px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-700 dark:text-emerald-300 font-sans">
+          {actionMsg}
+        </div>
+      )}
+
+      {/* Move panel */}
+      {showMovePanel && (
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-sans font-bold text-indigo-800 dark:text-indigo-300 flex items-center gap-1.5">
+              <FolderInput className="w-3.5 h-3.5" />
+              {zh ? '移動到其他專案' : 'Move to another project'}
+            </p>
+            <button onClick={() => setShowMovePanel(false)} className="text-indigo-400 hover:text-indigo-600">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-sans">
+            {zh ? '移動後此資料將從原專案中移除，並出現在新專案裡。' : 'The source will be removed from the current project and appear in the new one.'}
+          </p>
+          <div className="flex gap-2">
+            <select
+              value={movingTo}
+              onChange={e => setMovingTo(e.target.value)}
+              className="flex-1 bg-white dark:bg-stone-900 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none"
+            >
+              <option value="">{zh ? '選擇目標專案…' : 'Select target project…'}</option>
+              {projects.filter(p => p.id !== source.projectId).map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleMove}
+              disabled={!movingTo || actionLoading}
+              className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5"
+            >
+              {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FolderInput className="w-3.5 h-3.5" />}
+              {zh ? '移動' : 'Move'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Link panel */}
+      {showLinkPanel && (
+        <div className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-sans font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+              <Link2 className="w-3.5 h-3.5" />
+              {zh ? '加入其他專案（共用）' : 'Share to another project'}
+            </p>
+            <button onClick={() => setShowLinkPanel(false)} className="text-emerald-400 hover:text-emerald-600">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-sans">
+            {zh ? '此資料會同時出現在多個專案裡，原本的位置不變。' : 'The source will appear in multiple projects simultaneously.'}
+          </p>
+
+          {/* Currently linked projects */}
+          {linkedProjectIds.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-mono uppercase text-emerald-600 dark:text-emerald-400">{zh ? '目前共用的專案' : 'Currently linked'}</p>
+              {linkedProjectIds.map(pid => {
+                const p = projects.find(pr => pr.id === pid);
+                return p ? (
+                  <div key={pid} className="flex items-center justify-between px-2.5 py-1.5 bg-white dark:bg-stone-900 rounded-lg text-xs font-sans">
+                    <span className="text-stone-700 dark:text-stone-300">{p.name}</span>
+                    <button onClick={() => handleUnlink(pid)} className="text-stone-400 hover:text-red-500 transition-colors">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <select
+              value={linkingTo}
+              onChange={e => setLinkingTo(e.target.value)}
+              className="flex-1 bg-white dark:bg-stone-900 border border-emerald-200 dark:border-emerald-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none"
+            >
+              <option value="">{zh ? '選擇要加入的專案…' : 'Select project to share into…'}</option>
+              {projects
+                .filter(p => p.id !== source.projectId && !linkedProjectIds.includes(p.id))
+                .map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+            <button
+              onClick={handleLink}
+              disabled={!linkingTo || actionLoading}
+              className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5"
+            >
+              {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+              {zh ? '加入' : 'Link'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main detail grid layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

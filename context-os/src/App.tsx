@@ -279,14 +279,17 @@ export default function App() {
         aiRelations: [],
         isAnalyzed: false,
       });
-      await loadData();
 
-      // Trigger real AI analysis in background if requested
+      // If analyzeNow, wait for AI analysis to complete before refreshing data
       if (sourceData.analyzeNow && id) {
-        analyzeSource(id).then(() => {
-          loadData(); // refresh to show AI results
-        }).catch(console.error);
+        try {
+          await analyzeSource(id);
+        } catch (e) {
+          console.error('AI analysis failed:', e);
+        }
       }
+
+      await loadData();
     } catch (e: any) { alert(e.message); }
   };
 

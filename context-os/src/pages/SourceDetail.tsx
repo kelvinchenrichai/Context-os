@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Trash2, 
@@ -17,6 +17,9 @@ import {
 import { Project, Source, Language, ImportanceLevel } from '../types';
 import { TRANSLATIONS } from '../data';
 import AIAnalysisStatus from '../components/AIAnalysisStatus';
+import { getToken } from '../api';
+
+const API_BASE = 'https://context-os-api.kelvinchenrichai.workers.dev';
 
 interface SourceDetailProps {
   source: Source;
@@ -28,7 +31,7 @@ interface SourceDetailProps {
 }
 
 export default function SourceDetail({ 
-  source, 
+  source: initialSource, 
   projects, 
   onBack, 
   onDelete, 
@@ -36,15 +39,70 @@ export default function SourceDetail({
   lang 
 }: SourceDetailProps) {
   const t = TRANSLATIONS[lang];
+  const zh = lang === 'zh-TW';
+
+  // Live source state — fetch fresh data from backend on mount
+  const [source, setSource] = useState<Source>(initialSource);
+  const [analyzing, setAnalyzing] = useState(false);
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token) return;
+    fetch(`${API_BASE}/api/v1/sources/${initialSource.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then((d: any) => {
+        if (d.success && d.data) {
+          setSource(s => ({
+            ...s,
+            aiSummary: d.data.ai_summary || s.aiSummary,
+            aiKeyPoints: JSON.parse(d.data.ai_key_points || '[]'),
+            aiSuggestedTags: JSON.parse(d.data.ai_suggested_tags || '[]'),
+            isAnalyzed: d.data.is_analyzed === 1,
+          }));
+        }
+      })
+      .catch(() => {});
+  }, [initialSource.id]);
+
+  const handleReAnalyze = async () => {
+    const token = getToken();
+    if (!token || analyzing) return;
+    setAnalyzing(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/sources/analyze`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sourceId: source.id }),
+      });
+      const data = await res.json() as any;
+      if (data.success && data.data) {
+        setSource(s => ({
+          ...s,
+          aiSummary: data.data.summary,
+          aiKeyPoints: data.data.keyPoints || [],
+          aiSuggestedTags: data.data.suggestedTags || [],
+          isAnalyzed: true,
+        }));
+        onUpdate(source.id, {
+          aiSummary: data.data.summary,
+          aiKeyPoints: data.data.keyPoints || [],
+          isAnalyzed: true,
+        });
+      }
+    } catch {}
+    finally { setAnalyzing(false); }
+  };
 
   // Edit states
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(source.title);
   const [editedNote, setEditedNote] = useState(source.note);
   const [editedImportance, setEditedImportance] = useState<ImportanceLevel>(source.importance);
-
-  // Re-analyze simulation states
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const matchedProj = projects.find(p => p.id === source.projectId);
 
@@ -66,28 +124,10 @@ export default function SourceDetail({
     setIsEditing(false);
   };
 
-  const handleReAnalyze = () => {
-    setIsAnalyzing(true);
-  };
-
-  const handleAnalysisComplete = () => {
-    // Generate some richer mock data upon manual re-analysis
-    onUpdate(source.id, {
-      isAnalyzed: true,
-      aiSummary: `Re-evaluated on July 9, 2026. This technical spec has been cross-referenced with all primary option hedging scripts inside this workspace. Refined math suggests dealer hedging zones are shifting closer to critical monthly option expirations.`,
-      aiKeyPoints: [
-        ...source.aiKeyPoints,
-        'Additional Insight: Live hedge ratio matches standard Cboe interpolations with less than 2% deviation.',
-        'High density GEX zones represent strong psychological price support.'
-      ]
-    });
-    setIsAnalyzing(false);
-  };
-
-  if (isAnalyzing) {
+  if (analyzing) {
     return (
       <div className="flex-1 px-4 py-8 max-w-2xl mx-auto space-y-6 bg-white dark:bg-stone-950 flex flex-col justify-center min-h-[400px]">
-        <AIAnalysisStatus onComplete={handleAnalysisComplete} lang={lang} />
+        <AIAnalysisStatus onComplete={() => setAnalyzing(false)} lang={lang} />
       </div>
     );
   }
@@ -132,10 +172,14 @@ export default function SourceDetail({
           <button
             id="btn-source-reanalyze"
             onClick={handleReAnalyze}
-            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 rounded-lg cursor-pointer"
-            title="Re-analyze source with AI"
+            disabled={analyzing}
+            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-50 rounded-lg cursor-pointer disabled:opacity-50"
+            title={zh ? '重新 AI 分析' : 'Re-analyze with AI'}
           >
-            <RefreshCw className="w-4 h-4" />
+            {analyzing
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <RefreshCw className="w-4 h-4" />
+            }
           </button>
 
           {/* Delete resource */}

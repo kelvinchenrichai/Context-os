@@ -10,6 +10,7 @@ import {
   fetchProjects, createProject as apiCreateProject, updateProject as apiUpdateProject, deleteProject as apiDeleteProject,
   fetchSources, createSource as apiCreateSource, updateSource as apiUpdateSource, deleteSource as apiDeleteSource,
   fetchCategories, createCategory as apiCreateCategory, renameCategory as apiRenameCategory, deleteCategory as apiDeleteCategory,
+  analyzeSource,
 } from './api';
 
 // Components
@@ -268,23 +269,24 @@ export default function App() {
     category: string; tags: string[]; note: string; importance: ImportanceLevel;
     useCase: string; analyzeNow: boolean; includeInContext: boolean;
   }) => {
-    const aiSummary = sourceData.analyzeNow
-      ? 'Successfully analyzed. This reference has been indexed and prepared for AI context generation.'
-      : 'Analysis pending.';
-    const aiKeyPoints = sourceData.analyzeNow
-      ? ['Extracted core schemas.', 'Mapped to project dependencies.', 'Optimized for LLM context.']
-      : [];
-
     try {
-      await apiCreateSource({
+      const { id } = await apiCreateSource({
         ...sourceData,
         tags: sourceData.tags.length > 0 ? sourceData.tags : [sourceData.type.toUpperCase()],
-        aiSummary, aiKeyPoints,
-        aiSuggestedTags: [sourceData.platform.toUpperCase()],
+        aiSummary: '',
+        aiKeyPoints: [],
+        aiSuggestedTags: [],
         aiRelations: [],
-        isAnalyzed: sourceData.analyzeNow,
+        isAnalyzed: false,
       });
       await loadData();
+
+      // Trigger real AI analysis in background if requested
+      if (sourceData.analyzeNow && id) {
+        analyzeSource(id).then(() => {
+          loadData(); // refresh to show AI results
+        }).catch(console.error);
+      }
     } catch (e: any) { alert(e.message); }
   };
 

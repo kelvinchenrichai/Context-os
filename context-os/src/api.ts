@@ -133,6 +133,21 @@ export async function searchSources(q: string) {
   return apiFetch<any[]>(`/api/v1/search?q=${encodeURIComponent(q)}`);
 }
 
+// ─── AI Analysis ──────────────────────────────────────────────────────────────
+
+export async function analyzeSource(sourceId: string): Promise<{
+  summary: string;
+  keyPoints: string[];
+  suggestedTags: string[];
+  suggestedCategory: string;
+  useCase: string;
+}> {
+  return apiFetch('/api/v1/sources/analyze', {
+    method: 'POST',
+    body: JSON.stringify({ sourceId }),
+  });
+}
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 export async function saveExport(data: Record<string, unknown>) {

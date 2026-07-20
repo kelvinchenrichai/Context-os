@@ -148,6 +148,30 @@ export async function analyzeSource(sourceId: string): Promise<{
   });
 }
 
+// ─── Source project management ────────────────────────────────────────────────
+
+export async function getSourceProjects(sourceId: string): Promise<{ primaryProjectId: string; linkedProjectIds: string[] }> {
+  return apiFetch(`/api/v1/sources/${sourceId}/projects`);
+}
+
+export async function moveSource(sourceId: string, targetProjectId: string): Promise<{ moved: boolean; from: string; to: string }> {
+  return apiFetch(`/api/v1/sources/${sourceId}/move`, {
+    method: 'PATCH',
+    body: JSON.stringify({ targetProjectId }),
+  });
+}
+
+export async function linkSource(sourceId: string, projectId: string): Promise<{ linked: boolean }> {
+  return apiFetch(`/api/v1/sources/${sourceId}/link`, {
+    method: 'POST',
+    body: JSON.stringify({ projectId }),
+  });
+}
+
+export async function unlinkSource(sourceId: string, projectId: string): Promise<{ unlinked: boolean }> {
+  return apiFetch(`/api/v1/sources/${sourceId}/link/${projectId}`, { method: 'DELETE' });
+}
+
 // ─── Todos ────────────────────────────────────────────────────────────────────
 
 export interface Todo {

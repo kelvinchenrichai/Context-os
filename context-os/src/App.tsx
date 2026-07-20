@@ -393,6 +393,7 @@ export default function App() {
         onBack={() => navigate(-1)}
         onDelete={handleDeleteSource}
         onUpdate={handleUpdateSource}
+        onMoved={loadData}
         lang={lang}
       />
     );
@@ -464,7 +465,7 @@ export default function App() {
             <Route path="/library" element={
               <Library projects={projects} sources={sources}
                 onViewSource={(id) => navigate(`/sources/${id}`)}
-                onToggleIncludeInContext={handleToggleIncludeInContext} lang={lang} />
+                onToggleIncludeInContext={handleToggleIncludeInContext} onRefresh={loadData} lang={lang} />
             } />
             <Route path="/sources/:sourceId" element={<SourceDetailRoute />} />
             <Route path="/tags" element={

@@ -157,7 +157,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
       await onSave({
         projectId, title: finalTitle, url, type, platform,
         category, tags, note, importance, useCase,
-        analyzeNow: false, // save first, then analyze
+        analyzeNow,
         includeInContext,
       });
 

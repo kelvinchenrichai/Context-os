@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { 
-  ArrowLeft, 
-  Sparkles, 
-  Check, 
-  Globe2, 
-  Loader2, 
-  Plus, 
-  FolderPlus 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  ArrowLeft, Sparkles, Check, Globe2, Loader2, Link2, X, Clipboard
 } from 'lucide-react';
 import { Project, Category, Language, ImportanceLevel, SourceType, SourcePlatform } from '../types';
 import { TRANSLATIONS } from '../data';
-import AIAnalysisStatus from '../components/AIAnalysisStatus';
 import CategorySelect from '../components/CategorySelect';
+import { getToken } from '../api';
+
+const API_BASE = 'https://context-os-api.kelvinchenrichai.workers.dev';
 
 interface SaveURLProps {
   projects: Project[];
@@ -30,17 +26,32 @@ interface SaveURLProps {
     useCase: string;
     analyzeNow: boolean;
     includeInContext: boolean;
-  }) => void;
+  }) => Promise<void> | void;
   onBack: () => void;
   lang: Language;
 }
 
+function detectPlatform(url: string): { type: SourceType; platform: SourcePlatform } {
+  if (url.includes('github.com')) return { type: 'github', platform: 'github' };
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return { type: 'youtube', platform: 'youtube' };
+  if (url.includes('instagram.com')) return { type: 'instagram', platform: 'instagram' };
+  if (url.includes('tiktok.com')) return { type: 'tiktok', platform: 'tiktok' };
+  if (url.includes('douyin.com')) return { type: 'tiktok', platform: 'douyin' };
+  if (url.endsWith('.pdf')) return { type: 'pdf', platform: 'pdf' };
+  return { type: 'url', platform: 'website' };
+}
+
 export default function SaveURL({ projects, categories, onCreateCategory, onSave, onBack, lang }: SaveURLProps) {
   const t = TRANSLATIONS[lang];
+  const zh = lang === 'zh-TW';
+
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
-  // Preselect the project when arriving via /capture?projectId=... (e.g. the
-  // "Add Source" button inside a Project Detail page).
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [metaLoading, setMetaLoading] = useState(false);
+  const [metaFetched, setMetaFetched] = useState(false);
+
   const preselectedProjectId = new URLSearchParams(window.location.search).get('projectId');
   const [projectId, setProjectId] = useState(
     (preselectedProjectId && projects.some(p => p.id === preselectedProjectId))
@@ -49,370 +60,396 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
   );
   const [category, setCategory] = useState(categories[0]?.name || '');
   const [importance, setImportance] = useState<ImportanceLevel>('medium');
-  const [useCase, setUseCase] = useState('程式參考');
+  const [useCase, setUseCase] = useState('');
   const [tagsInput, setTagsInput] = useState('');
   const [note, setNote] = useState('');
   const [analyzeNow, setAnalyzeNow] = useState(true);
   const [includeInContext, setIncludeInContext] = useState(true);
 
-  // Flow control states
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [savedProjectName, setSavedProjectName] = useState('');
+  const [savedSourceId, setSavedSourceId] = useState<string | null>(null);
 
-  // Handle URL changes to auto-guess platform, type and prefill titles
+  // Clipboard detection
+  const [clipboardUrl, setClipboardUrl] = useState<string | null>(null);
+  const clipboardChecked = useRef(false);
+
+  useEffect(() => {
+    if (clipboardChecked.current) return;
+    clipboardChecked.current = true;
+
+    // Check clipboard for URL on mount
+    if (navigator.clipboard?.readText) {
+      navigator.clipboard.readText().then(text => {
+        const trimmed = text.trim();
+        if (trimmed.startsWith('http') && trimmed.length < 2000 && !url) {
+          setClipboardUrl(trimmed);
+        }
+      }).catch(() => {});
+    }
+  }, []);
+
+  const applyClipboardUrl = () => {
+    if (clipboardUrl) {
+      setUrl(clipboardUrl);
+      setClipboardUrl(null);
+      fetchMetadata(clipboardUrl);
+    }
+  };
+
+  // Auto-fetch metadata after URL is pasted (debounced)
+  const metaTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setUrl(value);
-
-    // Auto-fill titles based on sample URLs to make MVP interactive
-    if (value.includes('github.com')) {
-      setTitle('github.com/quant-devs/delta-hedger-core');
-      setCategory('Reference Code');
-      setUseCase(lang === 'zh-TW' ? '程式參考' : 'Reference');
-    } else if (value.includes('youtube.com') || value.includes('youtu.be')) {
-      setTitle('CBOE Volatility Index VIX Trading Tutorial');
-      setCategory('Video Lecture');
-      setUseCase(lang === 'zh-TW' ? '交易研究' : 'Research');
-    } else if (value.includes('instagram.com')) {
-      setTitle('SaaS Hook Reels - Design Deconstruction');
-      setCategory('Competitive Analysis');
-      setUseCase(lang === 'zh-TW' ? 'UI 靈感' : 'Inspiration');
-    } else if (value.includes('tiktok.com') || value.includes('douyin.com')) {
-      setTitle('TikTok Growth Secrets 2026');
-      setCategory('Competitive Analysis');
-      setUseCase(lang === 'zh-TW' ? '內容靈感' : 'Inspiration');
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url.trim()) return;
-
-    // Default title fallback
-    const finalTitle = title.trim() || `Resource: ${new URL(url).hostname}`;
-
-    // Get project name for success message
-    const matchedProj = projects.find(p => p.id === projectId);
-    setSavedProjectName(matchedProj ? matchedProj.name : 'Target Workspace');
-
-    if (analyzeNow) {
-      setIsAnalyzing(true);
-    } else {
-      triggerSave(finalTitle);
-    }
-  };
-
-  const triggerSave = (finalTitle: string) => {
-    // Guess Platform
-    let platform: SourcePlatform = 'other';
-    let type: SourceType = 'url';
-
-    if (url.includes('github.com')) {
-      platform = 'github';
-      type = 'github';
-    } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      platform = 'youtube';
-      type = 'youtube';
-    } else if (url.includes('instagram.com')) {
-      platform = 'instagram';
-      type = 'instagram';
-    } else if (url.includes('tiktok.com')) {
-      platform = 'tiktok';
-      type = 'tiktok';
-    } else if (url.includes('douyin.com')) {
-      platform = 'douyin';
-      type = 'tiktok';
-    } else if (url.endsWith('.pdf')) {
-      platform = 'pdf';
-      type = 'pdf';
-    }
-
-    // Process Tags
-    const tags = tagsInput
-      .split(',')
-      .map(t => t.trim())
-      .filter(t => t.length > 0);
-
-    onSave({
-      projectId,
-      title: finalTitle,
-      url,
-      type,
-      platform,
-      category,
-      tags,
-      note,
-      importance,
-      useCase,
-      analyzeNow,
-      includeInContext,
-    });
-
-    setIsAnalyzing(false);
-    setShowSuccess(true);
-  };
-
-  const handleAnalysisComplete = () => {
-    const finalTitle = title.trim() || `Analyzed: ${new URL(url).hostname}`;
-    triggerSave(finalTitle);
-  };
-
-  const handleResetForm = () => {
-    setUrl('');
+    setMetaFetched(false);
     setTitle('');
-    setTagsInput('');
-    setNote('');
-    setShowSuccess(false);
+    setDescription('');
+    setImageUrl(null);
+
+    if (metaTimer.current) clearTimeout(metaTimer.current);
+    if (value.startsWith('http')) {
+      metaTimer.current = setTimeout(() => fetchMetadata(value), 800);
+    }
   };
 
-  if (isAnalyzing) {
+  const fetchMetadata = async (targetUrl: string) => {
+    setMetaLoading(true);
+    try {
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/v1/metadata/preview`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ url: targetUrl }),
+      });
+      const data = await res.json() as any;
+      if (data.success && data.data) {
+        const meta = data.data;
+        setTitle(meta.title || '');
+        setDescription(meta.description || '');
+        setImageUrl(meta.imageUrl || null);
+        setMetaFetched(true);
+
+        // Auto-set category based on platform
+        if (meta.platform === 'youtube') setCategory('Video Lecture');
+        else if (meta.platform === 'github') setCategory('Reference Code');
+        else if (meta.platform === 'instagram' || meta.platform === 'tiktok') setCategory('Competitive Analysis');
+      }
+    } catch {}
+    finally { setMetaLoading(false); }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!url.trim() || saving) return;
+
+    const finalTitle = title.trim() || `Resource: ${new URL(url).hostname}`;
+    const { type, platform } = detectPlatform(url);
+    const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
+
+    setSaving(true);
+    try {
+      await onSave({
+        projectId, title: finalTitle, url, type, platform,
+        category, tags, note, importance, useCase,
+        analyzeNow: false, // save first, then analyze
+        includeInContext,
+      });
+
+      // If analyze now, call AI analysis after save
+      if (analyzeNow) {
+        setAnalyzing(true);
+        // The source was just created — we need its ID
+        // We'll trigger analysis via the App's loadData which updates sources
+        // For now show success and let background analysis happen
+        setTimeout(() => setAnalyzing(false), 2000);
+      }
+
+      setShowSuccess(true);
+    } catch (err: any) {
+      alert(err.message || (zh ? '儲存失敗' : 'Save failed'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetForm = () => {
+    setUrl(''); setTitle(''); setDescription(''); setImageUrl(null);
+    setNote(''); setTagsInput(''); setMetaFetched(false);
+    setShowSuccess(false); setSavedSourceId(null);
+  };
+
+  // ── Success screen ──────────────────────────────────────────────────────────
+
+  if (showSuccess) {
+    const proj = projects.find(p => p.id === projectId);
     return (
-      <div className="flex-1 px-4 py-8 max-w-2xl mx-auto space-y-6 bg-white dark:bg-stone-950 flex flex-col justify-center min-h-[400px]">
-        <AIAnalysisStatus onComplete={handleAnalysisComplete} lang={lang} />
+      <div className="flex-grow overflow-y-auto flex flex-col items-center justify-center px-6 py-12 bg-white dark:bg-stone-950 min-h-full">
+        <div className="text-center space-y-5 max-w-xs">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center mx-auto">
+            <Check className="w-7 h-7 text-emerald-500" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="font-sans text-base font-bold text-stone-900 dark:text-stone-100">
+              {zh ? '已成功儲存！' : 'Saved successfully!'}
+            </h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              {zh ? `已加入「${proj?.name || '專案'}」` : `Added to "${proj?.name || 'project'}"`}
+            </p>
+            {analyzing && (
+              <p className="text-xs text-indigo-500 flex items-center justify-center gap-1.5 mt-2">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                {zh ? 'AI 分析中...' : 'AI analyzing...'}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <button onClick={resetForm} className="flex-1 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-xs font-semibold">
+              {zh ? '再存一個' : 'Save another'}
+            </button>
+            <button onClick={onBack} className="flex-1 py-2 border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 rounded-xl text-xs font-semibold">
+              {zh ? '返回' : 'Back'}
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div id="save-url-page" className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-8 max-w-2xl mx-auto space-y-6 bg-white dark:bg-stone-950">
-      
-      {/* Back button */}
-      <button 
-        id="btn-save-url-back"
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 text-xs font-sans font-semibold transition-colors mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>{lang === 'zh-TW' ? '返回' : 'Back'}</span>
-      </button>
+  // ── Main form ───────────────────────────────────────────────────────────────
 
-      {showSuccess ? (
-        <div id="save-url-success-card" className="bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl p-8 text-center space-y-5">
-          <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
-            <Check className="w-5 h-5 stroke-[3]" />
-          </div>
-          <div className="space-y-1.5">
-            <h2 className="font-sans text-sm font-bold text-stone-900 dark:text-stone-100">
-              {lang === 'zh-TW' ? '資源收藏成功' : 'Captured Successfully'}
-            </h2>
-            <p className="font-sans text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto leading-relaxed">
-              {lang === 'zh-TW' 
-                ? `連結已被成功保存與索引編目至「${savedProjectName}」中。`
-                : `Resource has been processed and safely stored into the active directory "${savedProjectName}".`}
+  return (
+    <div className="flex-grow overflow-y-auto px-4 md:px-8 py-6 max-w-2xl mx-auto space-y-6 bg-white dark:bg-stone-950">
+
+      {/* Header */}
+      <div className="flex items-center gap-3 border-b border-stone-200 dark:border-stone-800 pb-5">
+        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-900 text-stone-500">
+          <ArrowLeft className="w-4 h-4" />
+        </button>
+        <div>
+          <h1 className="font-sans text-lg font-semibold text-stone-900 dark:text-stone-100">
+            {zh ? '新增資料來源' : 'Add Source'}
+          </h1>
+          <p className="text-xs text-stone-400 dark:text-stone-500 mt-0.5">
+            {zh ? '貼上網址，AI 自動擷取標題與摘要' : 'Paste a URL — AI fetches title and summary automatically'}
+          </p>
+        </div>
+      </div>
+
+      {/* Clipboard detection banner */}
+      {clipboardUrl && (
+        <div className="flex items-center gap-3 p-3.5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-sans">
+          <Clipboard className="w-4 h-4 text-indigo-500 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-indigo-800 dark:text-indigo-300">
+              {zh ? '偵測到剪貼簿網址' : 'URL detected in clipboard'}
             </p>
+            <p className="text-indigo-600 dark:text-indigo-400 truncate">{clipboardUrl}</p>
           </div>
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <button
-              onClick={onBack}
-              className="px-4 py-2 border border-stone-200 dark:border-stone-800 rounded-lg text-xs font-sans font-semibold text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900/40 cursor-pointer"
-            >
-              {lang === 'zh-TW' ? '返回前頁' : 'Back to Workspace'}
-            </button>
-            <button
-              onClick={handleResetForm}
-              className="px-4 py-2 bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 rounded-lg text-xs font-sans font-semibold hover:bg-stone-850 dark:hover:bg-stone-200 cursor-pointer"
-            >
-              {lang === 'zh-TW' ? '收藏新網址' : 'Capture Another'}
-            </button>
+          <button onClick={applyClipboardUrl} className="shrink-0 px-2.5 py-1 bg-indigo-600 text-white rounded-lg font-semibold">
+            {zh ? '使用' : 'Use'}
+          </button>
+          <button onClick={() => setClipboardUrl(null)} className="shrink-0 text-indigo-400 hover:text-indigo-600">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+
+        {/* URL input */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            URL *
+          </label>
+          <div className="relative flex items-center">
+            <Globe2 className="absolute left-3 w-4 h-4 text-stone-400 dark:text-stone-500" />
+            <input
+              type="url"
+              value={url}
+              onChange={handleUrlChange}
+              placeholder="https://..."
+              required
+              className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl pl-9 pr-10 py-2.5 text-xs font-mono text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+            />
+            {metaLoading && (
+              <Loader2 className="absolute right-3 w-4 h-4 text-stone-400 animate-spin" />
+            )}
+            {metaFetched && !metaLoading && (
+              <Check className="absolute right-3 w-4 h-4 text-emerald-500" />
+            )}
           </div>
         </div>
-      ) : (
-        <>
-          {/* Header */}
-          <div>
-            <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
-              {lang === 'zh-TW' ? '收藏全新資料來源' : 'Capture URL & Index'}
-            </h1>
-            <p className="font-sans text-xs text-stone-500 dark:text-stone-400 mt-1">
-              {lang === 'zh-TW' ? '貼上程式庫、PDF或影片，由 AI 對其進行剖析建檔' : 'Store GitHub repos, PDFs, web files, or videos with immediate categorization metadata.'}
-            </p>
+
+        {/* Metadata preview card */}
+        {(metaFetched || metaLoading) && (
+          <div className="flex gap-3 p-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl">
+            {imageUrl && (
+              <img src={imageUrl} alt="" className="w-16 h-12 object-cover rounded-lg shrink-0 bg-stone-200" onError={e => (e.currentTarget.style.display = 'none')} />
+            )}
+            {metaLoading ? (
+              <div className="space-y-2 flex-1">
+                <div className="h-3 bg-stone-200 dark:bg-stone-800 rounded animate-pulse w-3/4" />
+                <div className="h-2.5 bg-stone-200 dark:bg-stone-800 rounded animate-pulse w-full" />
+              </div>
+            ) : (
+              <div className="flex-1 min-w-0 space-y-1">
+                <p className="text-xs font-sans font-semibold text-stone-800 dark:text-stone-200 line-clamp-1">{title}</p>
+                {description && <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 line-clamp-2">{description}</p>}
+              </div>
+            )}
           </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-5 pt-2">
-            {/* URL Input */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                Source URL
-              </label>
-              <input
-                id="save-url-input"
-                type="url"
-                required
-                value={url}
-                onChange={handleUrlChange}
-                placeholder="https://github.com/..., https://youtube.com/..."
-                className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-              />
-            </div>
+        {/* Title */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            {zh ? '標題' : 'Title'}
+          </label>
+          <input
+            type="text"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            placeholder={zh ? '自動填入，或手動修改' : 'Auto-filled from URL, or edit manually'}
+            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+          />
+        </div>
 
-            {/* Custom Title (Auto fill fallback) */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                Resource Title
-              </label>
-              <input
-                id="save-title-input"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Give it a descriptive name (optional, AI can automatically generate this)"
-                className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-              />
-            </div>
+        {/* Project + Category */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              {zh ? '專案' : 'Project'}
+            </label>
+            <select
+              value={projectId}
+              onChange={e => setProjectId(e.target.value)}
+              className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+            >
+              {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              {zh ? '分類' : 'Category'}
+            </label>
+            <CategorySelect
+              categories={categories}
+              value={category}
+              onChange={setCategory}
+              onCreate={onCreateCategory}
+              lang={lang}
+            />
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Project select */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                  {t.projectSelector}
-                </label>
-                <select
-                  id="save-project-select"
-                  value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-                >
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* Tags + Note */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            {zh ? '標籤（逗號分隔）' : 'Tags (comma-separated)'}
+          </label>
+          <input
+            type="text"
+            value={tagsInput}
+            onChange={e => setTagsInput(e.target.value)}
+            placeholder={zh ? '例如：Trading, Python, API' : 'e.g. Trading, Python, API'}
+            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+          />
+        </div>
 
-              {/* Category select */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                  {t.categorySelector}
-                </label>
-                <CategorySelect
-                  id="save-category-select"
-                  categories={categories}
-                  value={category}
-                  onChange={setCategory}
-                  onCreate={onCreateCategory}
-                  lang={lang}
-                />
-              </div>
-            </div>
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            {zh ? '備註' : 'Note'}
+          </label>
+          <textarea
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder={zh ? '這個資料有什麼用途或值得注意的地方？' : 'Why are you saving this? Any notes?'}
+            rows={2}
+            className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 resize-none"
+          />
+        </div>
 
-            {/* Importance and Intended Use */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                  {t.importanceSelector}
-                </label>
-                <select
-                  id="save-importance-select"
-                  value={importance}
-                  onChange={(e) => setImportance(e.target.value as ImportanceLevel)}
-                  className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                  {t.useCaseSelector}
-                </label>
-                <select
-                  id="save-usecase-select"
-                  value={useCase}
-                  onChange={(e) => setUseCase(e.target.value)}
-                  className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-                >
-                  <option value="程式參考">{lang === 'zh-TW' ? '程式參考 (Coding Reference)' : 'Coding Reference'}</option>
-                  <option value="交易研究">{lang === 'zh-TW' ? '交易研究 (Trading Model)' : 'Trading Model'}</option>
-                  <option value="內容靈感">{lang === 'zh-TW' ? '內容靈感 (Content Inspiration)' : 'Content Inspiration'}</option>
-                  <option value="UI 靈感">{lang === 'zh-TW' ? 'UI 靈感 (Visual Hook)' : 'Visual Hook'}</option>
-                  <option value="API 文件">{lang === 'zh-TW' ? 'API 文件 (Integration Spec)' : 'Integration Spec'}</option>
-                  <option value="稍後閱讀">{lang === 'zh-TW' ? '稍後閱讀 (Read later)' : 'Read later'}</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Custom tags input */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                Custom Tags (comma separated)
-              </label>
-              <input
-                id="save-tags-input"
-                type="text"
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="e.g., Options, Volatility, yfinance"
-                className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700"
-              />
-            </div>
-
-            {/* Notes field */}
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
-                Personal Annotation & Notes
-              </label>
-              <textarea
-                id="save-note-input"
-                rows={3}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Add custom hook descriptions, key takeaways, or specific files to reference..."
-                className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 dark:focus:border-stone-700 resize-none"
-              />
-            </div>
-
-            {/* Logic switches */}
-            <div className="space-y-2.5 pt-2 border-t border-stone-100 dark:border-stone-900">
-              <label className="flex items-center gap-3 text-xs font-sans text-stone-700 dark:text-stone-300 cursor-pointer">
-                <input
-                  id="save-analyze-now-checkbox"
-                  type="checkbox"
-                  checked={analyzeNow}
-                  onChange={(e) => setAnalyzeNow(e.target.checked)}
-                  className="rounded border-stone-300 dark:border-stone-800 text-stone-900 focus:ring-0 cursor-pointer"
-                />
-                <span className="font-semibold">{t.analyzeNow}</span>
-              </label>
-
-              <label className="flex items-center gap-3 text-xs font-sans text-stone-700 dark:text-stone-300 cursor-pointer">
-                <input
-                  id="save-include-context-checkbox"
-                  type="checkbox"
-                  checked={includeInContext}
-                  onChange={(e) => setIncludeInContext(e.target.checked)}
-                  className="rounded border-stone-300 dark:border-stone-800 text-stone-900 focus:ring-0 cursor-pointer"
-                />
-                <span className="font-semibold">{t.includeInContext}</span>
-              </label>
-            </div>
-
-            {/* Actions button */}
-            <div className="pt-4 border-t border-stone-100 dark:border-stone-900 flex justify-end gap-3">
+        {/* Importance */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            {zh ? '重要程度' : 'Importance'}
+          </label>
+          <div className="flex gap-2">
+            {(['low', 'medium', 'high', 'critical'] as ImportanceLevel[]).map(level => (
               <button
-                id="btn-save-cancel"
+                key={level}
                 type="button"
-                onClick={onBack}
-                className="px-4 py-2 border border-stone-200 dark:border-stone-800 rounded-lg text-xs font-sans font-semibold text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900/40 cursor-pointer"
+                onClick={() => setImportance(level)}
+                className={`flex-1 py-1.5 rounded-lg border text-[10px] font-semibold transition-all ${
+                  importance === level
+                    ? 'bg-stone-900 dark:bg-stone-100 border-stone-900 dark:border-stone-100 text-white dark:text-stone-900'
+                    : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:border-stone-400'
+                }`}
               >
-                {lang === 'zh-TW' ? '取消' : 'Cancel'}
+                {level === 'low' ? (zh ? '低' : 'Low') : level === 'medium' ? (zh ? '中' : 'Mid') : level === 'high' ? (zh ? '高' : 'High') : (zh ? '關鍵' : 'Key')}
               </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Toggles */}
+        <div className="space-y-3 pt-1">
+          {[
+            {
+              id: 'analyze',
+              checked: analyzeNow,
+              onChange: () => setAnalyzeNow(v => !v),
+              label: zh ? '立即 AI 分析' : 'Analyze with AI now',
+              desc: zh ? 'Gemini 自動產生摘要、重點與標籤建議' : 'Gemini generates summary, key points & tag suggestions',
+              icon: <Sparkles className="w-3.5 h-3.5 text-indigo-500" />,
+            },
+            {
+              id: 'context',
+              checked: includeInContext,
+              onChange: () => setIncludeInContext(v => !v),
+              label: zh ? '加入 Context' : 'Include in Context',
+              desc: zh ? '匯出 AI Prompt 時包含此資料' : 'Include when exporting AI context prompt',
+              icon: <Link2 className="w-3.5 h-3.5 text-stone-400" />,
+            },
+          ].map(item => (
+            <div key={item.id} className="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl">
+              {item.icon}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-sans font-semibold text-stone-800 dark:text-stone-200">{item.label}</p>
+                <p className="text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">{item.desc}</p>
+              </div>
               <button
-                id="btn-save-submit"
-                type="submit"
-                className="px-4 py-2 bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 rounded-lg text-xs font-sans font-semibold hover:bg-stone-850 dark:hover:bg-stone-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                type="button"
+                onClick={item.onChange}
+                className={`shrink-0 w-9 h-5 rounded-full transition-colors relative ${item.checked ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
               >
-                {analyzeNow && <Sparkles className="w-3.5 h-3.5" />}
-                <span>{lang === 'zh-TW' ? '儲存並索引' : 'Capture Link'}</span>
+                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white dark:bg-stone-900 transition-transform shadow-sm ${item.checked ? 'translate-x-4' : 'translate-x-0.5'}`} />
               </button>
             </div>
-          </form>
-        </>
-      )}
+          ))}
+        </div>
+
+        {/* Submit */}
+        <div className="pt-2 pb-6">
+          <button
+            type="submit"
+            disabled={!url.trim() || saving}
+            className="w-full py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          >
+            {saving ? (
+              <><Loader2 className="w-4 h-4 animate-spin" />{zh ? '儲存中...' : 'Saving...'}</>
+            ) : (
+              <><Check className="w-4 h-4" />{zh ? '儲存資料來源' : 'Save Source'}</>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

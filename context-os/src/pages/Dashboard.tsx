@@ -17,7 +17,7 @@ import {
 import { Project, Source, Language } from '../types';
 import { TRANSLATIONS } from '../data';
 import QuickCapture from '../components/QuickCapture';
-import ReminderSection from '../components/ReminderSection';
+import TodoSection from '../components/TodoSection';
 
 interface DashboardProps {
   projects: Project[];
@@ -346,8 +346,8 @@ export default function Dashboard({
         </section>
       </div>
 
-      {/* Deadlines & Reminders Section */}
-      <ReminderSection projects={projects} lang={lang} />
+      {/* Todo Section */}
+      <TodoSection projects={projects} lang={lang} />
 
       {/* Export Context Promo Banner */}
       <section className="bg-stone-900 dark:bg-stone-950 border border-stone-800 dark:border-stone-900 rounded-xl p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">

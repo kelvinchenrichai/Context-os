@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Project, Source, Language } from '../types';
 import { TRANSLATIONS } from '../data';
-import ReminderSection from '../components/ReminderSection';
+import TodoSection from '../components/TodoSection';
 
 interface ProjectDetailProps {
   project: Project;
@@ -54,17 +54,6 @@ export default function ProjectDetail({
   const projectSources = sources.filter(s => s.projectId === project.id);
 
   // Mock checklist state
-  const [todos, setTodos] = useState([
-    { id: 1, text: lang === 'zh-TW' ? '分析 dealer gamma flip 臨界點計算公式' : 'Deep dive into dealer gamma flip zone mathematical logic', done: false },
-    { id: 2, text: lang === 'zh-TW' ? '匯入 Black-Scholes 計算公式庫' : 'Verify standard vectorized Black-Scholes computation module', done: true },
-    { id: 3, text: lang === 'zh-TW' ? '測試 0DTE 選權合約歷史 hedging 靈敏度' : 'Examine afternoon 0DTE volatility triggers on recent historical selloffs', done: false },
-    { id: 4, text: lang === 'zh-TW' ? '建構與 Cursor / Windsurf 的專屬 Context 整合' : 'Sync compiled prompt directly into Cursor workspace rule file', done: false },
-  ]);
-
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map(td => td.id === id ? { ...td, done: !td.done } : td));
-  };
-
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case 'github': return <Github className="w-4 h-4 text-stone-700 dark:text-stone-300" />;
@@ -97,11 +86,6 @@ export default function ProjectDetail({
         });
       }
       prompt += `\n`;
-    });
-
-    prompt += `## ACTIVE TODO / NEXT STEPS\n`;
-    todos.forEach((todo) => {
-      prompt += `- [${todo.done ? 'x' : ' '}] ${todo.text}\n`;
     });
 
     prompt += `\n-----------------------------------------\n`;
@@ -322,7 +306,7 @@ export default function ProjectDetail({
               </div>
 
               {/* Reminders / Tasks Schedule for this specific project */}
-              <ReminderSection projects={[project]} lang={lang} filterProjectId={project.id} />
+              <TodoSection projects={[project]} lang={lang} filterProjectId={project.id} />
             </div>
 
             {/* Sidebar metadata panel */}
@@ -581,34 +565,8 @@ export default function ProjectDetail({
 
         {/* 7. TODO TAB */}
         {activeTab === 'todo' && (
-          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 space-y-4 shadow-sm">
-            <div className="border-b border-stone-100 dark:border-stone-800 pb-3">
-              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-                Actionable Tasks (AI Recommendation List)
-              </h3>
-              <p className="font-sans text-[11px] text-stone-400 dark:text-stone-500 mt-1">
-                Tasks recommended based on knowledge gaps within the imported reference papers and video libraries.
-              </p>
-            </div>
-
-            <div className="space-y-2.5 text-xs font-sans">
-              {todos.map((todo) => (
-                <div 
-                  key={todo.id}
-                  onClick={() => toggleTodo(todo.id)}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-950 cursor-pointer border border-transparent hover:border-stone-200 dark:hover:border-stone-850 transition-all duration-100"
-                >
-                  {todo.done ? (
-                    <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  ) : (
-                    <Square className="w-4 h-4 text-stone-400 dark:text-stone-600 shrink-0" />
-                  )}
-                  <span className={`font-medium ${todo.done ? 'line-through text-stone-400 dark:text-stone-600' : 'text-stone-800 dark:text-stone-200'}`}>
-                    {todo.text}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 shadow-sm">
+            <TodoSection projects={[project]} lang={lang} filterProjectId={project.id} />
           </div>
         )}
       </div>

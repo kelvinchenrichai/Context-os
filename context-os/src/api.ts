@@ -148,6 +148,36 @@ export async function analyzeSource(sourceId: string): Promise<{
   });
 }
 
+// ─── Todos ────────────────────────────────────────────────────────────────────
+
+export interface Todo {
+  id: string;
+  text: string;
+  note: string;
+  isDone: boolean;
+  projectId: string | null;
+  dueAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function fetchTodos(projectId?: string): Promise<Todo[]> {
+  const qs = projectId ? `?projectId=${projectId}` : '';
+  return apiFetch<Todo[]>(`/api/v1/todos${qs}`);
+}
+
+export async function createTodo(data: { text: string; note?: string; projectId?: string | null; dueAt?: string | null }): Promise<{ id: string }> {
+  return apiFetch('/api/v1/todos', { method: 'POST', body: JSON.stringify(data) });
+}
+
+export async function updateTodo(id: string, data: Partial<{ text: string; note: string; isDone: boolean; dueAt: string | null; projectId: string | null }>): Promise<{ id: string }> {
+  return apiFetch(`/api/v1/todos/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
+}
+
+export async function deleteTodo(id: string): Promise<{ deleted: boolean }> {
+  return apiFetch(`/api/v1/todos/${id}`, { method: 'DELETE' });
+}
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 export async function saveExport(data: Record<string, unknown>) {

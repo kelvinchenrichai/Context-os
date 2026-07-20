@@ -516,7 +516,8 @@ export default function App() {
 
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} lang={lang} />
       <MobileDrawer activeTab={activeTab} setActiveTab={setActiveTab} lang={lang}
-        sourcesCount={sources.length} isOpen={isMobileDrawerOpen} setIsOpen={setIsMobileDrawerOpen} />
+        sourcesCount={sources.length} isOpen={isMobileDrawerOpen} setIsOpen={setIsMobileDrawerOpen}
+        currentUser={currentUser} onLogout={handleLogout} />
       <PwaInstallPrompt lang={lang} />
       <OnboardingTour lang={lang} activeTab={activeTab} setActiveTab={setActiveTab}
         isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />

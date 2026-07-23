@@ -11,7 +11,8 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  ChevronRight
 } from 'lucide-react';
 import { TRANSLATIONS } from '../data';
 import { Language } from '../types';

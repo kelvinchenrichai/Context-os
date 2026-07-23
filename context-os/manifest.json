@@ -2,15 +2,18 @@
   "name": "Context OS",
   "short_name": "ContextOS",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#0f1115",
-  "background_color": "#0f1115",
-  "description": "Premium knowledge hub to package references, PDFs and media streams into structured AI-ready context.",
+  "orientation": "portrait-primary",
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "description": "Save anything. Build AI-ready context.",
   "icons": [
     {
-      "src": "https://img.icons8.com/color/512/cloud-system.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%23111827'/><text x='256' y='340' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='280' fill='white'>C</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "share_target": {

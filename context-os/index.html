@@ -1,26 +1,35 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme -->
     <meta name="theme-color" content="#0f1115" />
+
+    <!-- iOS PWA required meta tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Context OS" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- iOS icons (inline SVG data URI so no external requests) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%23111827'/><text x='256' y='340' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='280' fill='white'>C</text></svg>" />
+
     <title>Context OS — turn references into AI-ready project memory</title>
   </head>
   <body class="bg-stone-50 dark:bg-stone-950 transition-colors duration-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
+
     <!-- PWA Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(err => {
-            console.log('SW registration skipped in development', err);
-          });
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
         });
       }
     </script>
   </body>
 </html>
-

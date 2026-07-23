@@ -17,16 +17,15 @@ export default function QuickCapture({ projects, onSave, lang }: QuickCapturePro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
-
+    if (!url.trim() || isSubmitting) return;
+    // Basic URL validation
+    if (!url.trim().startsWith('http')) {
+      return; // silently ignore non-URLs
+    }
     setIsSubmitting(true);
-    
-    // Simulate minor delay to feel professional
-    setTimeout(() => {
-      onSave(url, selectedProjectId, true);
-      setUrl('');
-      setIsSubmitting(false);
-    }, 400);
+    onSave(url, selectedProjectId, true);
+    setUrl('');
+    setIsSubmitting(false);
   };
 
   return (

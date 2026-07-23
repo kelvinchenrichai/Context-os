@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Filter, 
@@ -101,6 +101,19 @@ export default function Library({
       return next;
     });
   };
+
+  // Escape key exits batch mode
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && batchMode) {
+        setSelectedIds(new Set());
+        setBatchMode(false);
+        setBatchAction(null);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [batchMode]);
 
   const handleBatchExecute = async () => {
     if (!batchTargetProject || selectedIds.size === 0 || batchLoading) return;

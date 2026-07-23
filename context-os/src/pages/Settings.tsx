@@ -46,6 +46,12 @@ export default function Settings({
   const [editingCatId, setEditingCatId] = useState<string | null>(null);
   const [editingCatName, setEditingCatName] = useState('');
   const [newCatName, setNewCatName] = useState('');
+  const [toast, setToast] = useState('');
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  };
 
   const categoryUsageCount = (catName: string) => sources.filter(s => s.category === catName).length;
 
@@ -57,6 +63,7 @@ export default function Settings({
   const confirmEditingCategory = () => {
     if (editingCatId && editingCatName.trim()) {
       onRenameCategory(editingCatId, editingCatName.trim());
+      showToast(lang === 'zh-TW' ? '✓ 分類已更新' : '✓ Category updated');
     }
     setEditingCatId(null);
     setEditingCatName('');
@@ -65,6 +72,7 @@ export default function Settings({
   const handleAddCategory = () => {
     if (newCatName.trim()) {
       onCreateCategory(newCatName.trim());
+      showToast(lang === 'zh-TW' ? `✓ 已新增「${newCatName.trim()}」` : `✓ Added "${newCatName.trim()}"`);
       setNewCatName('');
     }
   };
@@ -88,6 +96,13 @@ export default function Settings({
 
   return (
     <div id="settings-page" className="flex-grow overflow-y-auto px-4 md:px-8 py-6 md:py-8 max-w-4xl mx-auto space-y-8 bg-white dark:bg-stone-950">
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-xs font-sans font-semibold shadow-lg animate-in fade-in slide-in-from-bottom-2">
+          {toast}
+        </div>
+      )}
       
       {/* Header */}
       <div className="border-b border-stone-200 dark:border-stone-800 pb-5">

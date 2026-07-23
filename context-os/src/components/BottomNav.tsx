@@ -23,7 +23,7 @@ export default function BottomNav({ activeTab, setActiveTab, lang }: BottomNavPr
     { id: 'save-url', label: t.capture, icon: Plus },
     { id: 'projects', label: t.projects, icon: Layers },
     { id: 'library', label: t.library, icon: Database },
-    { id: 'export', label: 'Export', icon: FileCode2 },
+    { id: 'export', label: t.export || 'Export', icon: FileCode2 },
   ];
 
   return (

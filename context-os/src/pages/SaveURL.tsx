@@ -148,7 +148,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
     e.preventDefault();
     if (!url.trim() || saving) return;
 
-    const finalTitle = title.trim() || `Resource: ${new URL(url).hostname}`;
+    const finalTitle = title.trim() || (() => { try { return `Resource: ${new URL(url).hostname}`; } catch { return url.slice(0, 60); } })();
     const { type, platform } = detectPlatform(url);
     const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
 

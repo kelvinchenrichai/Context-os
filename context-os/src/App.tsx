@@ -314,7 +314,8 @@ export default function App() {
 
   const handleSaveQuick = async (url: string, projectId: string, analyzeNow: boolean) => {
     let platform: SourcePlatform = 'other', type: SourceType = 'url';
-    let title = `Resource: ${new URL(url).hostname}`;
+    let title = 'Captured Resource';
+    try { title = `Resource: ${new URL(url).hostname}`; } catch { title = url.slice(0, 60); }
     if (url.includes('github.com')) { platform = 'github'; type = 'github'; title = 'GitHub Repository'; }
     else if (url.includes('youtube.com') || url.includes('youtu.be')) { platform = 'youtube'; type = 'youtube'; title = 'YouTube Video'; }
     else if (url.includes('instagram.com')) { platform = 'instagram'; type = 'instagram'; title = 'Instagram Reel'; }

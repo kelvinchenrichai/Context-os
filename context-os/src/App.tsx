@@ -11,6 +11,7 @@ import {
   fetchSources, createSource as apiCreateSource, updateSource as apiUpdateSource, deleteSource as apiDeleteSource,
   fetchCategories, createCategory as apiCreateCategory, renameCategory as apiRenameCategory, deleteCategory as apiDeleteCategory,
   analyzeSource,
+  fetchMetadataPreview,
 } from './api';
 
 // Components
@@ -18,6 +19,7 @@ import Sidebar from './components/Sidebar';
 import BottomNav from './components/BottomNav';
 import { MobileHeader, MobileDrawer } from './components/MobileHeaderAndDrawer';
 import PwaInstallPrompt from './components/PwaInstallPrompt';
+import ToastContainer, { ToastMessage, ToastType } from './components/Toast';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -97,6 +99,19 @@ export default function App() {
     try { return JSON.parse(localStorage.getItem('context_os_api_keys') || '[]'); } catch { return []; }
   });
   const [dataLoading, setDataLoading] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [submitting, setSubmitting] = useState<Record<string, boolean>>({});
+
+  const showToast = (type: ToastType, text: string) => {
+    const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    setToasts(prev => [...prev, { id, type, text }]);
+    return id;
+  };
+  const dismissToast = (id: string) => setToasts(prev => prev.filter(t => t.id !== id));
+  const updateToast = (id: string, type: ToastType, text: string) => {
+    setToasts(prev => prev.map(t => t.id === id ? { ...t, type, text } : t));
+    if (type !== 'loading') setTimeout(() => dismissToast(id), 3000);
+  };
 
   // ─── Auth check on mount ──────────────────────────────────────────────────
 
@@ -238,25 +253,39 @@ export default function App() {
     name: string, description: string, type: ProjectType,
     color: string, _defaultCategory: string, status: ProjectStatus
   ) => {
+    if (submitting.createProject) return; // prevent double-submit
     const limit = PLAN_LIMITS[plan].maxProjects;
     if (limit !== -1 && projects.length >= limit) {
-      alert(lang === 'zh-TW'
+      showToast('error', lang === 'zh-TW'
         ? `免費版最多 ${limit} 個專案，請升級後繼續。`
         : `Free plan allows up to ${limit} projects. Please upgrade.`);
       navigate('/settings/plan');
       return;
     }
+    setSubmitting(prev => ({ ...prev, createProject: true }));
+    const toastId = showToast('loading', lang === 'zh-TW' ? '建立專案中…' : 'Creating project…');
     try {
       const { id } = await apiCreateProject({ name, description, type, color, status, tags: [type.toUpperCase()] });
       await loadData();
+      updateToast(toastId, 'success', lang === 'zh-TW' ? `✓ 已建立「${name}」` : `✓ Created "${name}"`);
       navigate(`/projects/${id}`);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) {
+      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '建立失敗' : 'Failed to create'));
+    } finally {
+      setSubmitting(prev => ({ ...prev, createProject: false }));
+    }
   };
 
-  const handleDeleteProject = async (id: string) => {
-    await apiDeleteProject(id);
-    await loadData();
-    navigate('/projects');
+  const handleDeleteProject = async (id: string, projectName?: string) => {
+    const toastId = showToast('loading', lang === 'zh-TW' ? '刪除中…' : 'Deleting…');
+    try {
+      await apiDeleteProject(id);
+      await loadData();
+      updateToast(toastId, 'success', lang === 'zh-TW' ? '✓ 專案已刪除' : '✓ Project deleted');
+      navigate('/projects');
+    } catch (e: any) {
+      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '刪除失敗' : 'Delete failed'));
+    }
   };
 
   const handleUpdateProjectStatus = async (id: string, status: ProjectStatus) => {
@@ -269,6 +298,9 @@ export default function App() {
     category: string; tags: string[]; note: string; importance: ImportanceLevel;
     useCase: string; analyzeNow: boolean; includeInContext: boolean;
   }) => {
+    const toastId = showToast('loading', sourceData.analyzeNow
+      ? (lang === 'zh-TW' ? '儲存並分析中…' : 'Saving & analyzing…')
+      : (lang === 'zh-TW' ? '儲存中…' : 'Saving…'));
     try {
       const { id } = await apiCreateSource({
         ...sourceData,
@@ -290,7 +322,10 @@ export default function App() {
       }
 
       await loadData();
-    } catch (e: any) { alert(e.message); }
+      updateToast(toastId, 'success', lang === 'zh-TW' ? '✓ 已儲存資料來源' : '✓ Source saved');
+    } catch (e: any) {
+      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '儲存失敗' : 'Failed to save'));
+    }
   };
 
   const handleUpdateSource = async (id: string, data: Partial<Source>) => {
@@ -307,20 +342,47 @@ export default function App() {
   };
 
   const handleDeleteSource = async (id: string) => {
-    await apiDeleteSource(id);
-    await loadData();
-    navigate('/library');
+    const toastId = showToast('loading', lang === 'zh-TW' ? '刪除中…' : 'Deleting…');
+    try {
+      await apiDeleteSource(id);
+      await loadData();
+      updateToast(toastId, 'success', lang === 'zh-TW' ? '✓ 已刪除' : '✓ Deleted');
+      navigate('/library');
+    } catch (e: any) {
+      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '刪除失敗' : 'Delete failed'));
+    }
   };
 
   const handleSaveQuick = async (url: string, projectId: string, analyzeNow: boolean) => {
+    if (!url.trim().startsWith('http')) return;
+
     let platform: SourcePlatform = 'other', type: SourceType = 'url';
-    let title = 'Captured Resource';
-    try { title = `Resource: ${new URL(url).hostname}`; } catch { title = url.slice(0, 60); }
-    if (url.includes('github.com')) { platform = 'github'; type = 'github'; title = 'GitHub Repository'; }
-    else if (url.includes('youtube.com') || url.includes('youtu.be')) { platform = 'youtube'; type = 'youtube'; title = 'YouTube Video'; }
-    else if (url.includes('instagram.com')) { platform = 'instagram'; type = 'instagram'; title = 'Instagram Reel'; }
-    else if (url.includes('tiktok.com')) { platform = 'tiktok'; type = 'tiktok'; title = 'TikTok Video'; }
-    await handleSaveSource({ projectId, title, url, type, platform, category: 'Reference Code', tags: [], note: 'Quick capture', importance: 'medium', useCase: '', analyzeNow, includeInContext: true });
+    let title = url.slice(0, 60);
+    let note = 'Quick capture';
+    let category = 'Reference Code';
+
+    // Detect platform first (for category defaults, matches SaveURL page logic)
+    if (url.includes('github.com')) { platform = 'github'; type = 'github'; category = 'Reference Code'; }
+    else if (url.includes('youtube.com') || url.includes('youtu.be')) { platform = 'youtube'; type = 'youtube'; category = 'Video Lecture'; }
+    else if (url.includes('instagram.com')) { platform = 'instagram'; type = 'instagram'; category = 'Competitive Analysis'; }
+    else if (url.includes('tiktok.com')) { platform = 'tiktok'; type = 'tiktok'; category = 'Competitive Analysis'; }
+
+    const toastId = showToast('loading', lang === 'zh-TW' ? '擷取網址資訊中…' : 'Fetching page info…');
+
+    // Fetch real title/description just like the Save URL page does —
+    // this is what was missing from Quick Capture before.
+    try {
+      const meta = await fetchMetadataPreview(url);
+      title = meta.title || title;
+      note = meta.description || note;
+      if (meta.platform) platform = meta.platform as SourcePlatform;
+      if (meta.type) type = meta.type as SourceType;
+    } catch {
+      // Fall through with the basic fallback title if metadata fetch fails
+    }
+
+    dismissToast(toastId);
+    await handleSaveSource({ projectId, title, url, type, platform, category, tags: [], note, importance: 'medium', useCase: '', analyzeNow, includeInContext: true });
   };
 
   // Category handlers
@@ -521,6 +583,7 @@ export default function App() {
         sourcesCount={sources.length} isOpen={isMobileDrawerOpen} setIsOpen={setIsMobileDrawerOpen}
         currentUser={currentUser} onLogout={handleLogout} />
       <PwaInstallPrompt lang={lang} />
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
       <OnboardingTour lang={lang} activeTab={activeTab} setActiveTab={setActiveTab}
         isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
     </div>

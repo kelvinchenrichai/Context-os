@@ -25,7 +25,13 @@ export default function TodoSection({ projects, lang, filterProjectId }: TodoSec
 
   // Voice input
   const [isListening, setIsListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
+
+  // iOS (Safari and any browser on iOS, since they all use WebKit) does not
+  // support the Web Speech API's SpeechRecognition — this is an Apple
+  // platform limitation, not something we can polyfill around.
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
   // Load todos from backend
   useEffect(() => {
@@ -37,28 +43,54 @@ export default function TodoSection({ projects, lang, filterProjectId }: TodoSec
 
   // Web Speech API setup
   const startVoice = () => {
+    setVoiceError(null);
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert(zh ? '你的瀏覽器不支援語音輸入，請使用 Chrome 或 Safari。' : 'Your browser does not support speech recognition. Please use Chrome or Safari.');
+
+    if (!SpeechRecognition || isIos) {
+      setVoiceError(isIos
+        ? (zh ? 'iOS 裝置目前不支援語音輸入（這是 Apple 系統限制），請直接用文字輸入。' : 'Voice input is not supported on iOS (an Apple platform limitation). Please use text input instead.')
+        : (zh ? '你的瀏覽器不支援語音輸入，請改用 Chrome 或 Edge。' : 'Your browser does not support voice input. Please use Chrome or Edge.'));
+      setShowForm(true);
       return;
     }
+
     const recognition = new SpeechRecognition();
     recognition.lang = zh ? 'zh-TW' : 'en-US';
     recognition.continuous = false;
     recognition.interimResults = false;
 
     recognition.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript;
-      setInputText(prev => prev ? `${prev} ${transcript}` : transcript);
+      const transcript = e.results?.[0]?.[0]?.transcript;
+      if (transcript) {
+        setInputText(prev => prev ? `${prev} ${transcript}` : transcript);
+      } else {
+        setVoiceError(zh ? '沒有聽清楚，請再試一次。' : "Didn't catch that — please try again.");
+      }
       setIsListening(false);
     };
-    recognition.onerror = () => setIsListening(false);
+
+    recognition.onerror = (e: any) => {
+      setIsListening(false);
+      if (e.error === 'not-allowed' || e.error === 'permission-denied') {
+        setVoiceError(zh
+          ? '請允許瀏覽器使用麥克風權限（點網址列左側的鎖頭圖示可以設定）。'
+          : 'Please allow microphone access (usually via the lock icon in the address bar).');
+      } else if (e.error === 'no-speech') {
+        setVoiceError(zh ? '沒有偵測到聲音，請再試一次。' : 'No speech detected — please try again.');
+      } else {
+        setVoiceError(zh ? `語音輸入發生錯誤（${e.error}），請改用文字輸入。` : `Voice input error (${e.error}) — please use text input instead.`);
+      }
+    };
     recognition.onend = () => setIsListening(false);
 
-    recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-    setShowForm(true);
+    try {
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsListening(true);
+      setShowForm(true);
+    } catch {
+      setVoiceError(zh ? '無法啟動語音輸入，請改用文字輸入。' : 'Could not start voice input — please use text input instead.');
+    }
   };
 
   const stopVoice = () => {
@@ -176,6 +208,17 @@ export default function TodoSection({ projects, lang, filterProjectId }: TodoSec
             ))}
           </div>
           {zh ? '正在聆聽…請說出你的待辦事項' : 'Listening… speak your todo'}
+        </div>
+      )}
+
+      {/* Voice error/unsupported message */}
+      {voiceError && !isListening && (
+        <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl text-xs font-sans text-amber-700 dark:text-amber-400 leading-relaxed">
+          <span className="shrink-0">🎙️</span>
+          <span className="flex-1">{voiceError}</span>
+          <button onClick={() => setVoiceError(null)} className="shrink-0 text-amber-500 hover:text-amber-700">
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 

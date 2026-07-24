@@ -148,6 +148,26 @@ export async function analyzeSource(sourceId: string): Promise<{
   });
 }
 
+// ─── URL Metadata Preview ───────────────────────────────────────────────────────
+
+export interface UrlMetadata {
+  url: string;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  siteName: string | null;
+  type: string;
+  platform: string;
+  domain: string;
+}
+
+export async function fetchMetadataPreview(url: string): Promise<UrlMetadata> {
+  return apiFetch('/api/v1/metadata/preview', {
+    method: 'POST',
+    body: JSON.stringify({ url }),
+  });
+}
+
 // ─── Source project management ────────────────────────────────────────────────
 
 export async function getSourceProjects(sourceId: string): Promise<{ primaryProjectId: string; linkedProjectIds: string[] }> {

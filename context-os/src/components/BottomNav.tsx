@@ -18,10 +18,12 @@ interface BottomNavProps {
 export default function BottomNav({ activeTab, setActiveTab, lang }: BottomNavProps) {
   const t = TRANSLATIONS[lang];
 
+  // Capture is the single most important action, so it sits in the middle
+  // and gets a raised, filled button treatment instead of the plain tab style.
   const tabs = [
     { id: 'dashboard', label: t.dashboard, icon: Home },
-    { id: 'save-url', label: t.capture, icon: Plus },
     { id: 'projects', label: t.projects, icon: Layers },
+    { id: 'save-url', label: lang === 'zh-TW' ? '新增' : 'Add', icon: Plus, isPrimary: true },
     { id: 'library', label: t.library, icon: Database },
     { id: 'export', label: t.export || 'Export', icon: FileCode2 },
   ];
@@ -31,7 +33,32 @@ export default function BottomNav({ activeTab, setActiveTab, lang }: BottomNavPr
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;
-        
+
+        if (tab.isPrimary) {
+          // Raised, filled circular button — visually signals "this is the main action"
+          return (
+            <button
+              key={tab.id}
+              id={`bottom-nav-item-${tab.id}`}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-sans -mt-5"
+            >
+              <div className={`p-3 rounded-full shadow-lg transition-transform duration-150 ${
+                isActive
+                  ? 'bg-indigo-600 scale-105'
+                  : 'bg-stone-900 dark:bg-stone-100 hover:scale-105'
+              }`}>
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white dark:text-stone-900'}`} />
+              </div>
+              <span className={`mt-1.5 scale-90 tracking-wide font-bold ${
+                isActive ? 'text-indigo-600' : 'text-stone-700 dark:text-stone-300'
+              }`}>
+                {tab.label}
+              </span>
+            </button>
+          );
+        }
+
         return (
           <button
             key={tab.id}

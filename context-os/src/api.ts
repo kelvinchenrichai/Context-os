@@ -168,6 +168,43 @@ export async function fetchMetadataPreview(url: string): Promise<UrlMetadata> {
   });
 }
 
+// ─── Image Upload ─────────────────────────────────────────────────────────────
+
+export interface ImageUploadResult {
+  imageUrl: string;
+  imageKey: string;
+  remaining: number;
+}
+
+export async function uploadImage(file: File | Blob): Promise<ImageUploadResult> {
+  const token = getToken();
+  const formData = new FormData();
+  formData.append('file', file, 'image.jpg');
+
+  const res = await fetch(`${BASE_URL}/api/v1/images/upload`, {
+    method: 'POST',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // NOTE: do not set Content-Type manually — the browser needs to set
+      // the multipart boundary itself when sending FormData.
+    },
+    body: formData,
+  });
+
+  const data = await res.json() as { success: boolean; data: ImageUploadResult; error?: { message: string } };
+  if (!data.success) throw new Error(data.error?.message || 'Image upload failed');
+  return data.data;
+}
+
+export interface ImageUsage {
+  used: number;
+  limit: number; // -1 means unlimited
+}
+
+export async function fetchImageUsage(): Promise<ImageUsage> {
+  return apiFetch('/api/v1/images/usage');
+}
+
 // ─── Source project management ────────────────────────────────────────────────
 
 export async function getSourceProjects(sourceId: string): Promise<{ primaryProjectId: string; linkedProjectIds: string[] }> {

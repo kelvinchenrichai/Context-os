@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Zap, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import { Language, PlanId, PlanLimits, PLAN_LIMITS } from '../types';
+import { fetchImageUsage } from '../api';
 
 interface PlanPageProps {
   lang: Language;
@@ -66,6 +67,11 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
   const limits = PLAN_LIMITS[plan];
   const zh = lang === 'zh-TW';
 
+  const [imageUsage, setImageUsage] = useState<{ used: number; limit: number } | null>(null);
+  useEffect(() => {
+    fetchImageUsage().then(setImageUsage).catch(() => {});
+  }, []);
+
   return (
     <div className="flex-grow overflow-y-auto px-4 md:px-8 py-6 md:py-8 max-w-4xl mx-auto space-y-8 bg-white dark:bg-stone-950">
 
@@ -115,6 +121,14 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
             label={zh ? 'AI 分析次數（本月）' : 'AI Analyses (this month)'}
             lang={lang}
           />
+          {imageUsage && (
+            <UsageBar
+              used={imageUsage.used}
+              max={imageUsage.limit}
+              label={zh ? '圖片上傳數量' : 'Images Uploaded'}
+              lang={lang}
+            />
+          )}
         </div>
       </section>
 

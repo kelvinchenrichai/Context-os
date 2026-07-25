@@ -225,6 +225,7 @@ export default function App() {
       aiRelations: Array.isArray(s.aiRelations) ? s.aiRelations : JSON.parse(s.ai_relations || '[]'),
       isAnalyzed: s.is_analyzed === 1 || s.isAnalyzed === true,
       includeInContext: s.include_in_context === 1 || s.includeInContext !== false,
+      imageUrl: s.image_url || s.imageUrl || null,
       createdAt: s.created_at || s.createdAt || new Date().toISOString(),
       updatedAt: s.updated_at || s.updatedAt || new Date().toISOString(),
     };
@@ -296,7 +297,7 @@ export default function App() {
   const handleSaveSource = async (sourceData: {
     projectId: string; title: string; url: string; type: SourceType; platform: SourcePlatform;
     category: string; tags: string[]; note: string; importance: ImportanceLevel;
-    useCase: string; analyzeNow: boolean; includeInContext: boolean;
+    useCase: string; analyzeNow: boolean; includeInContext: boolean; imageUrl?: string;
   }) => {
     const toastId = showToast('loading', sourceData.analyzeNow
       ? (lang === 'zh-TW' ? '儲存並分析中…' : 'Saving & analyzing…')
@@ -322,7 +323,9 @@ export default function App() {
       }
 
       await loadData();
-      updateToast(toastId, 'success', lang === 'zh-TW' ? '✓ 已儲存資料來源' : '✓ Source saved');
+      updateToast(toastId, 'success', sourceData.type === 'image'
+        ? (lang === 'zh-TW' ? '✓ 圖片已儲存' : '✓ Image saved')
+        : (lang === 'zh-TW' ? '✓ 已儲存資料來源' : '✓ Source saved'));
     } catch (e: any) {
       updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '儲存失敗' : 'Failed to save'));
     }

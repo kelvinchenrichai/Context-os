@@ -62,6 +62,7 @@ export interface Source {
   aiRelations: string[]; // Related source IDs
   isAnalyzed: boolean;
   includeInContext: boolean;
+  imageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

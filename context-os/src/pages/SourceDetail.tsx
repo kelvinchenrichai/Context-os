@@ -16,7 +16,8 @@ import {
   FolderInput,
   Link2,
   X,
-  Plus
+  Plus,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Project, Source, Language, ImportanceLevel } from '../types';
 import { TRANSLATIONS } from '../data';
@@ -155,6 +156,7 @@ export default function SourceDetail({
   const matchedProj = projects.find(p => p.id === source.projectId);
 
   const getPlatformIcon = (platform: string) => {
+    if (source.type === 'image') return <ImageIcon className="w-5 h-5 text-violet-500" />;
     switch (platform) {
       case 'github': return <Github className="w-5 h-5 text-stone-700 dark:text-stone-300" />;
       case 'youtube': return <Video className="w-5 h-5 text-red-500" />;
@@ -404,6 +406,17 @@ export default function SourceDetail({
                 </a>
               </div>
             </div>
+
+            {/* Uploaded image preview (for type === 'image' sources) */}
+            {source.type === 'image' && source.imageUrl && (
+              <div className="pt-2">
+                <img
+                  src={source.imageUrl}
+                  alt={source.title}
+                  className="w-full max-h-96 object-contain rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950"
+                />
+              </div>
+            )}
 
             {/* User Note annotation */}
             <div className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2">

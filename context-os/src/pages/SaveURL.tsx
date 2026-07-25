@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  ArrowLeft, Sparkles, Check, Globe2, Loader2, Link2, X, Clipboard
+  ArrowLeft, Sparkles, Check, Globe2, Loader2, Link2, X, Clipboard, Image as ImageIcon, Upload, AlertTriangle
 } from 'lucide-react';
 import { Project, Category, Language, ImportanceLevel, SourceType, SourcePlatform } from '../types';
 import { TRANSLATIONS } from '../data';
 import CategorySelect from '../components/CategorySelect';
-import { getToken } from '../api';
+import { getToken, uploadImage, fetchImageUsage } from '../api';
+import { compressImage, formatBytes } from '../imageCompress';
 
 const API_BASE = 'https://context-os-api.kelvinchenrichai.workers.dev';
 
@@ -26,6 +27,7 @@ interface SaveURLProps {
     useCase: string;
     analyzeNow: boolean;
     includeInContext: boolean;
+    imageUrl?: string;
   }) => Promise<void> | void;
   onBack: () => void;
   lang: Language;
@@ -45,12 +47,30 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
   const t = TRANSLATIONS[lang];
   const zh = lang === 'zh-TW';
 
+  // Two capture modes: paste a URL, or upload an image/screenshot
+  const [mode, setMode] = useState<'url' | 'image'>('url');
+
   const [url, setUrl] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [metaLoading, setMetaLoading] = useState(false);
   const [metaFetched, setMetaFetched] = useState(false);
+
+  // Image upload mode state
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [imageUsage, setImageUsage] = useState<{ used: number; limit: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (mode === 'image') {
+      fetchImageUsage().then(setImageUsage).catch(() => {});
+    }
+  }, [mode]);
 
   const preselectedProjectId = new URLSearchParams(window.location.search).get('projectId');
   const [projectId, setProjectId] = useState(
@@ -144,6 +164,86 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
     finally { setMetaLoading(false); }
   };
 
+  // ── Image upload handlers ─────────────────────────────────────────────────
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError(null);
+
+    // Client-side guardrails before we even try uploading
+    if (!file.type.startsWith('image/')) {
+      setUploadError(zh ? '請選擇圖片檔案（JPEG/PNG/WEBP/GIF）。' : 'Please select an image file (JPEG/PNG/WEBP/GIF).');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError(zh ? '檔案太大，請選擇 10MB 以內的圖片。' : 'File too large — please choose an image under 10MB.');
+      return;
+    }
+    if (imageUsage && imageUsage.limit !== -1 && imageUsage.used >= imageUsage.limit) {
+      setUploadError(zh
+        ? `已達圖片上傳上限（${imageUsage.limit} 張），請升級方案。`
+        : `Image upload limit reached (${imageUsage.limit}). Please upgrade your plan.`);
+      return;
+    }
+
+    setImageFile(file);
+    setImagePreviewUrl(URL.createObjectURL(file));
+    if (!title.trim()) setTitle(file.name.replace(/\.[^.]+$/, ''));
+
+    // Upload immediately (compressed) so the user sees progress right away
+    setUploading(true);
+    try {
+      const compressed = await compressImage(file);
+      const result = await uploadImage(compressed);
+      setUploadedImageUrl(result.imageUrl);
+      setImageUsage(prev => prev ? { ...prev, used: prev.used + 1 } : prev);
+    } catch (e: any) {
+      setUploadError(e.message || (zh ? '上傳失敗，請再試一次。' : 'Upload failed — please try again.'));
+      setImageFile(null);
+      setImagePreviewUrl(null);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreviewUrl(null);
+    setUploadedImageUrl(null);
+    setUploadError(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleImageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!uploadedImageUrl || saving || uploading) return;
+
+    setSaving(true);
+    try {
+      await onSave({
+        projectId,
+        title: title.trim() || (zh ? '未命名圖片' : 'Untitled Image'),
+        url: uploadedImageUrl,
+        type: 'image',
+        platform: 'other',
+        category, tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
+        note, importance, useCase,
+        analyzeNow, includeInContext,
+        imageUrl: uploadedImageUrl,
+      });
+      if (analyzeNow) {
+        setAnalyzing(true);
+        setTimeout(() => setAnalyzing(false), 2000);
+      }
+      setShowSuccess(true);
+    } catch (err: any) {
+      alert(err.message || (zh ? '儲存失敗' : 'Save failed'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim() || saving) return;
@@ -182,6 +282,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
     setUrl(''); setTitle(''); setDescription(''); setImageUrl(null);
     setNote(''); setTagsInput(''); setMetaFetched(false);
     setShowSuccess(false); setSavedSourceId(null);
+    clearImage();
   };
 
   // ── Success screen ──────────────────────────────────────────────────────────
@@ -241,8 +342,36 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
         </div>
       </div>
 
+      {/* Mode switcher: URL vs Image upload */}
+      <div className="flex gap-2 p-1 bg-stone-100 dark:bg-stone-900 rounded-xl">
+        <button
+          type="button"
+          onClick={() => setMode('url')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-sans font-semibold transition-all ${
+            mode === 'url'
+              ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-sm'
+              : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+          }`}
+        >
+          <Globe2 className="w-3.5 h-3.5" />
+          {zh ? '貼上網址' : 'Paste URL'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('image')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-sans font-semibold transition-all ${
+            mode === 'image'
+              ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 shadow-sm'
+              : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+          }`}
+        >
+          <ImageIcon className="w-3.5 h-3.5" />
+          {zh ? '上傳圖片' : 'Upload Image'}
+        </button>
+      </div>
+
       {/* Clipboard detection banner */}
-      {clipboardUrl && (
+      {mode === 'url' && clipboardUrl && (
         <div className="flex items-center gap-3 p-3.5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-sans">
           <Clipboard className="w-4 h-4 text-indigo-500 shrink-0" />
           <div className="flex-1 min-w-0">
@@ -260,6 +389,184 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
         </div>
       )}
 
+      {mode === 'image' ? (
+        <form onSubmit={handleImageSubmit} className="space-y-5">
+
+          {/* Image usage quota */}
+          {imageUsage && (
+            <div className={`flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-sans ${
+              imageUsage.limit !== -1 && imageUsage.used >= imageUsage.limit
+                ? 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400'
+                : 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400'
+            }`}>
+              <span>{zh ? '圖片上傳額度' : 'Image upload quota'}</span>
+              <span className="font-mono font-semibold">
+                {imageUsage.used} / {imageUsage.limit === -1 ? '∞' : imageUsage.limit}
+              </span>
+            </div>
+          )}
+
+          {/* Upload zone */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              {zh ? '圖片 / 截圖 *' : 'Image / Screenshot *'}
+            </label>
+
+            {!imagePreviewUrl ? (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full flex flex-col items-center justify-center gap-2 py-10 border-2 border-dashed border-stone-300 dark:border-stone-700 rounded-xl hover:border-stone-400 dark:hover:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-900/40 transition-colors"
+              >
+                <Upload className="w-6 h-6 text-stone-400" />
+                <span className="text-xs font-sans font-semibold text-stone-600 dark:text-stone-400">
+                  {zh ? '點擊選擇圖片' : 'Tap to choose an image'}
+                </span>
+                <span className="text-[10px] text-stone-400 dark:text-stone-500">
+                  JPEG / PNG / WEBP / GIF · {zh ? '最大 10MB' : 'up to 10MB'}
+                </span>
+              </button>
+            ) : (
+              <div className="relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800">
+                <img src={imagePreviewUrl} alt="" className="w-full max-h-64 object-contain bg-stone-50 dark:bg-stone-900" />
+                {uploading && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2">
+                    <Loader2 className="w-5 h-5 text-white animate-spin" />
+                    <span className="text-xs font-sans font-semibold text-white">{zh ? '上傳中…' : 'Uploading…'}</span>
+                  </div>
+                )}
+                {!uploading && uploadedImageUrl && (
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2 py-1 bg-emerald-600 rounded-lg text-[10px] font-sans font-semibold text-white">
+                    <Check className="w-3 h-3" />
+                    {zh ? '已上傳' : 'Uploaded'}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={clearImage}
+                  className="absolute top-2 left-2 p-1.5 bg-black/60 hover:bg-black/80 rounded-lg text-white transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                {imageFile && (
+                  <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/60 rounded-lg text-[10px] font-mono text-white">
+                    {formatBytes(imageFile.size)}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {uploadError && (
+              <div className="flex items-start gap-2 p-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg text-[11px] text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{uploadError}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Title */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              {zh ? '標題' : 'Title'}
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder={zh ? '這張圖片是什麼？' : 'What is this image?'}
+              className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+            />
+          </div>
+
+          {/* Project + Category */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                {zh ? '專案' : 'Project'}
+              </label>
+              <select
+                value={projectId}
+                onChange={e => setProjectId(e.target.value)}
+                className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400"
+              >
+                {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+                {zh ? '分類' : 'Category'}
+              </label>
+              <CategorySelect
+                categories={categories}
+                value={category}
+                onChange={setCategory}
+                onCreate={onCreateCategory}
+                lang={lang}
+              />
+            </div>
+          </div>
+
+          {/* Note */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              {zh ? '備註' : 'Note'}
+            </label>
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder={zh ? '這張圖片有什麼用途或值得注意的地方？' : 'Why are you saving this? Any notes?'}
+              rows={2}
+              className="w-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-3 py-2.5 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-400 resize-none"
+            />
+          </div>
+
+          {/* AI analyze toggle */}
+          <label
+            htmlFor="toggle-analyze-image"
+            className="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl cursor-pointer hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-sans font-semibold text-stone-800 dark:text-stone-200">
+                {zh ? '立即 AI 讀圖分析' : 'Analyze with Vision AI now'}
+              </p>
+              <p className="text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">
+                {zh ? 'AI 讀取圖片內容，擷取文字並產生摘要' : 'AI reads the image, extracts text, and generates a summary'}
+              </p>
+            </div>
+            <input
+              id="toggle-analyze-image"
+              type="checkbox"
+              checked={analyzeNow}
+              onChange={() => setAnalyzeNow(v => !v)}
+              className="w-4 h-4 rounded accent-stone-900 dark:accent-stone-100 shrink-0 cursor-pointer"
+            />
+          </label>
+
+          {/* Submit */}
+          <div className="pt-2 pb-6">
+            <button
+              type="submit"
+              disabled={!uploadedImageUrl || saving || uploading}
+              className="w-full py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              {saving ? (
+                <><Loader2 className="w-4 h-4 animate-spin" />{zh ? '儲存中...' : 'Saving...'}</>
+              ) : (
+                <><Check className="w-4 h-4" />{zh ? '儲存圖片' : 'Save Image'}</>
+              )}
+            </button>
+          </div>
+        </form>
+      ) : (
       <form onSubmit={handleSubmit} className="space-y-5">
 
         {/* URL input */}
@@ -454,6 +761,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
           </button>
         </div>
       </form>
+      )}
     </div>
   );
 }

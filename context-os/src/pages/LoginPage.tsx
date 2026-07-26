@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { devLogin, setToken } from '../api';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -13,24 +12,8 @@ const isIosPwa = () => {
 };
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showIosHint, setShowIosHint] = useState(false);
-
-  const handleDevLogin = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const result = await devLogin('kelvin@contextOS.app', 'Kelvin');
-      setToken(result.token);
-      onLogin();
-    } catch (e: any) {
-      setError(e.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const [googleLoginStarted, setGoogleLoginStarted] = useState(false);
 
   const handleGoogleLogin = () => {
@@ -115,28 +98,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             </svg>
             {googleLoginStarted ? '跳轉中...' : '使用 Google 帳號登入'}
           </button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-stone-200 dark:border-stone-800" />
-            </div>
-            <div className="relative flex justify-center text-[11px]">
-              <span className="px-2 bg-white dark:bg-stone-900 text-stone-400">或</span>
-            </div>
-          </div>
-
-          {/* Dev login */}
-          <button
-            onClick={handleDevLogin}
-            disabled={loading}
-            className="w-full py-2.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-sm font-sans font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity active:scale-95"
-          >
-            {loading ? '登入中...' : '開發者快速登入（Demo）'}
-          </button>
-
-          <p className="text-[10px] text-stone-400 dark:text-stone-500 text-center leading-relaxed">
-            開發者登入不需要密碼，適合本地測試使用。正式上線後請使用 Google 登入。
-          </p>
         </div>
 
         {/* iOS PWA install tip */}

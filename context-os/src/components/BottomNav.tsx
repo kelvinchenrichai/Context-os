@@ -45,13 +45,13 @@ export default function BottomNav({ activeTab, setActiveTab, lang }: BottomNavPr
             >
               <div className={`p-3 rounded-full shadow-lg transition-transform duration-150 ${
                 isActive
-                  ? 'bg-indigo-600 scale-105'
+                  ? 'bg-keepo-600 scale-105'
                   : 'bg-stone-900 dark:bg-stone-100 hover:scale-105'
               }`}>
                 <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white dark:text-stone-900'}`} />
               </div>
               <span className={`mt-1.5 scale-90 tracking-wide font-bold ${
-                isActive ? 'text-indigo-600' : 'text-stone-700 dark:text-stone-300'
+                isActive ? 'text-keepo-600' : 'text-stone-700 dark:text-stone-300'
               }`}>
                 {tab.label}
               </span>

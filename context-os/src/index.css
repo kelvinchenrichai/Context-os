@@ -44,6 +44,23 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
+  /* Keepo (記波) brand palette — replaces the old indigo-* accent.
+     600/800/950 are the exact brand colors from the v3 design (icon
+     gradient #3D3570->#252048, dark-mode bg #1A1730); 400 is the mascot's
+     bright purple #A79AFF. The rest are interpolated to fill out a normal
+     Tailwind-style 50-950 ramp. */
+  --color-keepo-50: #F2F0FA;
+  --color-keepo-100: #E6E2F5;
+  --color-keepo-200: #D0C8EC;
+  --color-keepo-300: #B7ACDE;
+  --color-keepo-400: #A79AFF;
+  --color-keepo-500: #7A6BC0;
+  --color-keepo-600: #3D3570;
+  --color-keepo-700: #322B5C;
+  --color-keepo-800: #252048;
+  --color-keepo-900: #1F1A3D;
+  --color-keepo-950: #1A1730;
+
   /* Custom Professional Polish Palette Mappings */
   --color-stone-50: var(--stone-50);
   --color-stone-100: var(--stone-100);

@@ -17,7 +17,7 @@ export default function CreateProject({ categories, onCreateCategory, onSave, on
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<ProjectType>('software');
-  const [color, setColor] = useState('#4F46E5'); // Indigo default
+  const [color, setColor] = useState('#3D3570'); // Keepo brand default
   const [defaultCategory, setDefaultCategory] = useState(categories[0]?.name || '');
   const [status, setStatus] = useState<ProjectStatus>('idea');
 

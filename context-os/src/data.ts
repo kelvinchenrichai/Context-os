@@ -2,7 +2,7 @@ import { Project, Source, Tag, Category, Language } from './types';
 
 export const TRANSLATIONS: Record<Language, any> = {
   en: {
-    brandName: 'Context OS',
+    brandName: '記波 Keepo',
     tagline: 'SaaS for Context Management',
     dashboard: 'Dashboard',
     projects: 'Projects',
@@ -31,7 +31,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     aiAnalyzing: 'AI is analyzing...',
     emptyStateTitle: 'No sources captured yet',
     emptyStateDesc: 'Capture your first URL, GitHub repository, or document to start building project memory.',
-    shareTitle: 'Save to Context OS',
+    shareTitle: 'Save to Keepo',
     shareSubtitle: 'Analyze and index web resources directly into your project memories.',
     promptCopied: 'Prompt copied to clipboard!',
     copyPrompt: 'Copy Context Prompt',
@@ -67,10 +67,10 @@ export const TRANSLATIONS: Record<Language, any> = {
     currentPlan: 'Current Plan',
     upgradeButton: 'Upgrade to Pro',
     pwaTitle: 'PWA & Mobile Setup',
-    pwaDesc: 'Install Context OS as a standalone app to enable quick sharing targets on iOS and Android.',
+    pwaDesc: 'Install Keepo as a standalone app to enable quick sharing targets on iOS and Android.',
   },
   'zh-TW': {
-    brandName: 'Context OS',
+    brandName: '記波 Keepo',
     tagline: '專案記憶與 AI 語境管理器',
     dashboard: '今日概覽',
     projects: '專案列表',
@@ -99,7 +99,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     aiAnalyzing: 'AI 正在進行深度分析與摘要...',
     emptyStateTitle: '尚無任何收藏資料',
     emptyStateDesc: '立即貼上第一個網址、GitHub 倉庫或筆記，開始建立專案的 AI 核心記憶。',
-    shareTitle: '儲存至 Context OS',
+    shareTitle: '儲存至記波 Keepo',
     shareSubtitle: '直接將網路資源分析並索引至您的專案記憶中。',
     promptCopied: 'Prompt 已複製到剪貼簿！',
     copyPrompt: '複製 Context Prompt',
@@ -135,7 +135,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     currentPlan: '目前方案',
     upgradeButton: '升級到專業版',
     pwaTitle: 'PWA 與手機桌面安裝',
-    pwaDesc: '將 Context OS 安裝為獨立應用程式，解鎖 iOS/Android 原生分享選單快速儲存功能。',
+    pwaDesc: '將記波 Keepo 安裝為獨立應用程式，解鎖 iOS/Android 原生分享選單快速儲存功能。',
   },
 };
 
@@ -145,7 +145,7 @@ export const INITIAL_PROJECTS: Project[] = [
     name: 'Gamma GEX Option Trading',
     description: 'Dealer gamma positioning, market-maker hedging triggers, and options order flow indicators.',
     type: 'trading',
-    color: '#4F46E5', // Indigo
+    color: '#3D3570', // Keepo brand
     icon: 'TrendingUp',
     createdAt: '2026-06-01T10:00:00Z',
     updatedAt: '2026-07-08T15:30:00Z',
@@ -340,7 +340,7 @@ export const INITIAL_SOURCES: Source[] = [
 ];
 
 export const ALL_TAGS: Tag[] = [
-  { id: 't-1', name: 'GEX', count: 3, color: '#4F46E5' },
+  { id: 't-1', name: 'GEX', count: 3, color: '#3D3570' },
   { id: 't-2', name: 'Python', count: 1, color: '#06B6D4' },
   { id: 't-3', name: 'Trading', count: 2, color: '#10B981' },
   { id: 't-4', name: 'Options', count: 2, color: '#6366F1' },

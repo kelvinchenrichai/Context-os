@@ -68,7 +68,7 @@ export default function AIAnalysisStatus({ onComplete, lang }: AIAnalysisStatusP
     <div id="ai-analysis-container" className="bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-xl p-6 font-sans">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Loader2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
+          <img src="/mascot/mascot-thinking.svg" alt="" className="w-5 h-5" />
           <span className="text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100">
             {lang === 'zh-TW' ? 'AI 專案記憶建置中' : 'AI Context Engine Analyzing'}
           </span>
@@ -106,7 +106,7 @@ export default function AIAnalysisStatus({ onComplete, lang }: AIAnalysisStatusP
                     <Check className="w-3 h-3 stroke-[3]" />
                   </div>
                 ) : isCurrent ? (
-                  <Loader2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400 animate-spin" />
+                  <Loader2 className="w-4 h-4 text-keepo-600 dark:text-keepo-400 animate-spin" />
                 ) : (
                   <div className="w-4 h-4 rounded-full border border-stone-300 dark:border-stone-700 bg-transparent" />
                 )}

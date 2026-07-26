@@ -150,7 +150,7 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
                 }`}
               >
                 {p.popular && (
-                  <span className="absolute -top-2.5 left-4 text-[9px] font-sans font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white">
+                  <span className="absolute -top-2.5 left-4 text-[9px] font-sans font-bold px-2 py-0.5 rounded-full bg-keepo-600 text-white">
                     {zh ? '最受歡迎' : 'Popular'}
                   </span>
                 )}
@@ -182,7 +182,7 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
                     isActive
                       ? 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 cursor-default'
                       : p.id === 'pro'
-                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        ? 'bg-keepo-600 hover:bg-keepo-700 text-white'
                         : p.id === 'power'
                           ? 'bg-stone-900 dark:bg-stone-100 hover:opacity-90 text-white dark:text-stone-900'
                           : 'bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'

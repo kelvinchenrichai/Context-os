@@ -62,12 +62,10 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
         {/* Logo */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-stone-900 dark:bg-stone-100">
-            <span className="font-mono text-xl font-bold text-white dark:text-stone-900">C</span>
-          </div>
+          <img src="/icons/icon-standard.svg" alt="Keepo" className="w-12 h-12 rounded-2xl mx-auto" />
           <div>
             <h1 className="font-sans text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
-              Context OS
+              記波 Keepo
             </h1>
             <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
               Save anything. Build AI-ready context.

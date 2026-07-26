@@ -235,7 +235,7 @@ export default function SourceDetail({
           {/* Move to project */}
           <button
             onClick={() => { setShowMovePanel(v => !v); setShowLinkPanel(false); }}
-            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-indigo-600 hover:border-indigo-300 rounded-lg cursor-pointer transition-colors"
+            className="p-1.5 border border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:text-keepo-600 hover:border-keepo-300 rounded-lg cursor-pointer transition-colors"
             title={zh ? '移動到其他專案' : 'Move to project'}
           >
             <FolderInput className="w-4 h-4" />
@@ -275,24 +275,24 @@ export default function SourceDetail({
 
       {/* Move panel */}
       {showMovePanel && (
-        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4 space-y-3">
+        <div className="bg-keepo-50 dark:bg-keepo-950/30 border border-keepo-200 dark:border-keepo-800 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-sans font-bold text-indigo-800 dark:text-indigo-300 flex items-center gap-1.5">
+            <p className="text-xs font-sans font-bold text-keepo-800 dark:text-keepo-300 flex items-center gap-1.5">
               <FolderInput className="w-3.5 h-3.5" />
               {zh ? '移動到其他專案' : 'Move to another project'}
             </p>
-            <button onClick={() => setShowMovePanel(false)} className="text-indigo-400 hover:text-indigo-600">
+            <button onClick={() => setShowMovePanel(false)} className="text-keepo-400 hover:text-keepo-600">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          <p className="text-[11px] text-indigo-600 dark:text-indigo-400 font-sans">
+          <p className="text-[11px] text-keepo-600 dark:text-keepo-400 font-sans">
             {zh ? '移動後此資料將從原專案中移除，並出現在新專案裡。' : 'The source will be removed from the current project and appear in the new one.'}
           </p>
           <div className="flex gap-2">
             <select
               value={movingTo}
               onChange={e => setMovingTo(e.target.value)}
-              className="flex-1 bg-white dark:bg-stone-900 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none"
+              className="flex-1 bg-white dark:bg-stone-900 border border-keepo-200 dark:border-keepo-800 rounded-lg px-3 py-2 text-xs font-sans text-stone-900 dark:text-stone-100 focus:outline-none"
             >
               <option value="">{zh ? '選擇目標專案…' : 'Select target project…'}</option>
               {projects.filter(p => p.id !== source.projectId).map(p => (
@@ -302,7 +302,7 @@ export default function SourceDetail({
             <button
               onClick={handleMove}
               disabled={!movingTo || actionLoading}
-              className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5"
+              className="px-3 py-2 bg-keepo-600 hover:bg-keepo-700 text-white rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5"
             >
               {actionLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FolderInput className="w-3.5 h-3.5" />}
               {zh ? '移動' : 'Move'}
@@ -441,7 +441,7 @@ export default function SourceDetail({
             {/* AI Summary Section */}
             <div className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2.5">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-keepo-600 dark:text-keepo-400" />
                 <span className="block text-[10px] font-mono font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider">
                   {zh ? 'AI 摘要' : 'AI Context Summary'}
                 </span>

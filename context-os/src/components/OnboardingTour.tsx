@@ -28,13 +28,13 @@ const TOUR_STEPS: TourStep[] = [
   // ── Step 1: Welcome ────────────────────────────────────────────────────────
   {
     targetId: 'none',
-    titleZh: '👋 歡迎使用 Context OS',
-    titleEn: '👋 Welcome to Context OS',
-    contentZh: 'Context OS 幫你把分散在各地的連結、GitHub、PDF、影片，整理成 AI 可以直接理解的專案記憶。\n\n這個導覽會帶你完成三個最重要的步驟：建立專案 → 存入第一筆資料 → 了解如何管理。大約需要 2 分鐘。',
-    contentEn: 'Context OS organizes your scattered links, GitHub repos, PDFs and videos into AI-ready project memory.\n\nThis tour covers the 3 most important steps: Create a project → Save your first source → Manage your library. Takes about 2 minutes.',
+    titleZh: '👋 歡迎使用記波 Keepo',
+    titleEn: '👋 Welcome to Keepo',
+    contentZh: '記波 Keepo 幫你把分散在各地的連結、GitHub、PDF、影片，整理成 AI 可以直接理解的專案記憶。\n\n這個導覽會帶你完成三個最重要的步驟：建立專案 → 存入第一筆資料 → 了解如何管理。大約需要 2 分鐘。',
+    contentEn: 'Keepo organizes your scattered links, GitHub repos, PDFs and videos into AI-ready project memory.\n\nThis tour covers the 3 most important steps: Create a project → Save your first source → Manage your library. Takes about 2 minutes.',
     placement: 'center',
     tab: 'dashboard',
-    icon: <Sparkles className="w-6 h-6 text-indigo-500" />,
+    icon: <Sparkles className="w-6 h-6 text-keepo-500" />,
   },
 
   // ── Step 2: Quick Capture Bar ─────────────────────────────────────────────
@@ -98,8 +98,8 @@ const TOUR_STEPS: TourStep[] = [
     targetId: 'sidebar-item-export',
     titleZh: '📦 最後：匯出給 AI 使用',
     titleEn: '📦 Finally: Export for AI',
-    contentZh: '把整個專案的知識打包成一個 Prompt，直接貼進 ChatGPT、Claude 或 Cursor，讓 AI 立刻理解你的專案背景，不用再重複解釋。\n\n這就是 Context OS 的核心價值：\n存好資料 → 一鍵匯出 → AI 秒懂你的專案。',
-    contentEn: "Package your entire project knowledge into one prompt. Paste it into ChatGPT, Claude, or Cursor and the AI instantly understands your project context — no more repeated explanations.\n\nThis is Context OS's core value:\nSave content → One-click export → AI understands your project instantly.",
+    contentZh: '把整個專案的知識打包成一個 Prompt，直接貼進 ChatGPT、Claude 或 Cursor，讓 AI 立刻理解你的專案背景，不用再重複解釋。\n\n這就是記波 Keepo 的核心價值：\n存好資料 → 一鍵匯出 → AI 秒懂你的專案。',
+    contentEn: "Package your entire project knowledge into one prompt. Paste it into ChatGPT, Claude, or Cursor and the AI instantly understands your project context — no more repeated explanations.\n\nThis is Keepo's core value:\nSave content → One-click export → AI understands your project instantly.",
     placement: 'right',
     tab: 'export',
     actionZh: '去試試匯出',
@@ -112,8 +112,8 @@ const TOUR_STEPS: TourStep[] = [
     targetId: 'none',
     titleZh: '✅ 你已經準備好了！',
     titleEn: '✅ You\'re all set!',
-    contentZh: '你已經了解 Context OS 的核心流程。\n\n現在就開始：\n1. 建立第一個專案\n2. 貼上幾個你常用的連結\n3. 匯出給 AI 用\n\n如果之後忘記什麼功能，去「設定」頁面找「重新啟動功能導覽」按鈕。',
-    contentEn: "You now understand Context OS's core workflow.\n\nGet started now:\n1. Create your first project\n2. Paste a few links you use often\n3. Export to AI\n\nIf you ever forget something, go to Settings and click 'Restart Walkthrough'.",
+    contentZh: '你已經了解記波 Keepo 的核心流程。\n\n現在就開始：\n1. 建立第一個專案\n2. 貼上幾個你常用的連結\n3. 匯出給 AI 用\n\n如果之後忘記什麼功能，去「設定」頁面找「重新啟動功能導覽」按鈕。',
+    contentEn: "You now understand Keepo's core workflow.\n\nGet started now:\n1. Create your first project\n2. Paste a few links you use often\n3. Export to AI\n\nIf you ever forget something, go to Settings and click 'Restart Walkthrough'.",
     placement: 'center',
     tab: 'dashboard',
     icon: <CheckCircle2 className="w-6 h-6 text-emerald-500" />,
@@ -292,7 +292,7 @@ export default function OnboardingTour({
           <div className="px-5 pb-3">
             <button
               onClick={() => { step.onAction!(setActiveTab); handleNext(); }}
-              className="w-full flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-colors"
+              className="w-full flex items-center justify-center gap-1.5 py-2 bg-keepo-600 hover:bg-keepo-700 text-white rounded-xl text-xs font-semibold transition-colors"
             >
               {zh ? step.actionZh : step.actionEn}
               <ArrowRight className="w-3.5 h-3.5" />
@@ -310,7 +310,7 @@ export default function OnboardingTour({
                 onClick={() => setCurrentStep(i)}
                 className={`rounded-full transition-all ${
                   i === currentStep
-                    ? 'w-4 h-1.5 bg-indigo-500'
+                    ? 'w-4 h-1.5 bg-keepo-500'
                     : i < currentStep
                       ? 'w-1.5 h-1.5 bg-emerald-400'
                       : 'w-1.5 h-1.5 bg-stone-300 dark:bg-stone-700'

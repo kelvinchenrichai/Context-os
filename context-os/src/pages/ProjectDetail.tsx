@@ -191,7 +191,7 @@ export default function ProjectDetail({
                   project.status === 'done' 
                     ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/40' 
                     : project.status === 'in_progress' 
-                    ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/40' 
+                    ? 'bg-keepo-50 dark:bg-keepo-950/40 text-keepo-600 dark:text-keepo-400 border-keepo-200 dark:border-keepo-900/40' 
                     : project.status === 'planning' 
                     ? 'bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-900/40' 
                     : 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/40'
@@ -248,7 +248,7 @@ export default function ProjectDetail({
             <div className="lg:col-span-8 space-y-6">
               <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 space-y-4">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <Sparkles className="w-4 h-4 text-keepo-600 dark:text-keepo-400" />
                   <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100">
                     {lang === 'zh-TW' ? 'AI 專案總覽與記憶摘要' : 'AI Project Overview & Memory Summary'}
                   </h3>

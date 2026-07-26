@@ -42,9 +42,7 @@ export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount, c
     <aside id="premium-sidebar" className="hidden md:flex flex-col w-64 h-screen border-r border-stone-150 dark:border-stone-800 bg-stone-100 dark:bg-stone-950 transition-colors duration-200">
       {/* Brand Header */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-stone-150 dark:border-stone-800">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900">
-          <span className="font-mono text-sm font-semibold tracking-wider">C</span>
-        </div>
+        <img src="/icons/icon-standard.svg" alt="Keepo" className="w-8 h-8 rounded-lg shrink-0" />
         <div className="flex flex-col">
           <span className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-50">
             {t.brandName}

@@ -61,7 +61,7 @@ export default function PwaInstallPrompt({ lang }: PwaInstallPromptProps) {
         </div>
         <div className="flex-1 min-w-0 space-y-1">
           <p className="text-xs font-sans font-bold text-stone-900 dark:text-stone-100">
-            {zh ? '安裝 Context OS App' : 'Install Context OS'}
+            {zh ? '安裝記波 Keepo App' : 'Install Keepo'}
           </p>
           <p className="text-[11px] font-sans text-stone-500 dark:text-stone-400 leading-relaxed">
             {zh
@@ -122,8 +122,8 @@ export default function PwaInstallPrompt({ lang }: PwaInstallPromptProps) {
         </div>
         <p className="text-[10px] text-stone-400 dark:text-stone-500 leading-relaxed">
           {zh
-            ? '安裝後，在 YouTube/IG/TikTok 按「分享」時，就能選擇「Context OS」直接儲存到你的專案。'
-            : 'After installing, use the iOS Share sheet from YouTube/IG/TikTok to save directly to Context OS.'}
+            ? '安裝後，在 YouTube/IG/TikTok 按「分享」時，就能選擇「記波 Keepo」直接儲存到你的專案。'
+            : 'After installing, use the iOS Share sheet from YouTube/IG/TikTok to save directly to Keepo.'}
         </p>
       </div>
     );

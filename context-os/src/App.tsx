@@ -266,7 +266,7 @@ export default function App() {
   function normalizeProject(p: any): Project {
     return {
       id: p.id, name: p.name, description: p.description || '',
-      type: p.type as ProjectType, color: p.color || '#4F46E5',
+      type: p.type as ProjectType, color: p.color || '#3D3570',
       icon: p.icon || 'Layers', summary: p.summary || '',
       status: (p.status as ProjectStatus) || ('active' as ProjectStatus),
       sourceCount: p.source_count ?? p.sourceCount ?? 0,
@@ -501,9 +501,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
         <div className="text-center space-y-3">
-          <div className="w-8 h-8 rounded-lg bg-stone-900 dark:bg-stone-100 mx-auto flex items-center justify-center">
-            <span className="font-mono text-sm font-bold text-white dark:text-stone-900">C</span>
-          </div>
+          <img src="/mascot/mascot-thinking.svg" alt="" className="w-10 h-10 mx-auto" />
           <p className="text-xs text-stone-400">Loading...</p>
         </div>
       </div>
@@ -615,9 +613,7 @@ export default function App() {
             <Route path="/auth/callback" element={
               <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
                 <div className="text-center space-y-3">
-                  <div className="w-8 h-8 rounded-lg bg-stone-900 dark:bg-stone-100 mx-auto flex items-center justify-center">
-                    <span className="font-mono text-sm font-bold text-white dark:text-stone-900">C</span>
-                  </div>
+                  <img src="/mascot/mascot-thinking.svg" alt="" className="w-10 h-10 mx-auto" />
                   <p className="text-xs text-stone-400">登入中...</p>
                 </div>
               </div>

@@ -365,7 +365,7 @@ export default function Dashboard({
           </h2>
           <p className="text-xs text-stone-400 max-w-xl font-sans leading-relaxed">
             {lang === 'zh-TW' 
-              ? '選擇任何專案，Context OS 會自動彙整程式庫、PDF、網頁與影片重點，輸出為 ChatGPT 或 Claude 最好解讀的語境 Prompts。'
+              ? '選擇任何專案，記波 Keepo 會自動彙整程式庫、PDF、網頁與影片重點，輸出為 ChatGPT 或 Claude 最好解讀的語境 Prompts。'
               : 'Compile your selected PDFs, GitHub repositories, notes and video transcripts into perfectly optimized background knowledge prompts for LLM chats.'}
           </p>
         </div>

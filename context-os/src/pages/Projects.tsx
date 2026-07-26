@@ -79,7 +79,7 @@ export default function Projects({
             switch (status) {
               case 'idea': return 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/20';
               case 'planning': return 'bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-900/20';
-              case 'in_progress': return 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/20';
+              case 'in_progress': return 'bg-keepo-50 dark:bg-keepo-950/40 text-keepo-600 dark:text-keepo-400 border border-keepo-100 dark:border-keepo-900/20';
               case 'done': return 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20';
               default: return 'bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-800';
             }

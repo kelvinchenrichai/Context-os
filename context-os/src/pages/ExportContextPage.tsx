@@ -46,7 +46,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
     
     // Custom wrapper based on LLM platform optimization parameters
     if (exportTarget === 'claude') {
-      prompt += `<system>\nYou are Claude, an expert developer and system analyst. The user has provided an indexed Context OS Project Memory structure below. Deeply study the technical notes, API constraints, and code samples before replying.\n</system>\n\n`;
+      prompt += `<system>\nYou are Claude, an expert developer and system analyst. The user has provided an indexed Keepo Project Memory structure below. Deeply study the technical notes, API constraints, and code samples before replying.\n</system>\n\n`;
     } else if (exportTarget === 'cursor') {
       prompt += `# CURSOR RULES ARCHITECTURE (.cursorrules)\n# Optimal context guidelines for localized workspace autocompletes\n\n`;
     } else if (exportTarget === 'gemini') {

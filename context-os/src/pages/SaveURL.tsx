@@ -303,7 +303,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
               {zh ? `已加入「${proj?.name || '專案'}」` : `Added to "${proj?.name || 'project'}"`}
             </p>
             {analyzing && (
-              <p className="text-xs text-indigo-500 flex items-center justify-center gap-1.5 mt-2">
+              <p className="text-xs text-keepo-500 flex items-center justify-center gap-1.5 mt-2">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 {zh ? 'AI 分析中...' : 'AI analyzing...'}
               </p>
@@ -372,18 +372,18 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
 
       {/* Clipboard detection banner */}
       {mode === 'url' && clipboardUrl && (
-        <div className="flex items-center gap-3 p-3.5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-xl text-xs font-sans">
-          <Clipboard className="w-4 h-4 text-indigo-500 shrink-0" />
+        <div className="flex items-center gap-3 p-3.5 bg-keepo-50 dark:bg-keepo-950/30 border border-keepo-200 dark:border-keepo-800 rounded-xl text-xs font-sans">
+          <Clipboard className="w-4 h-4 text-keepo-500 shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-indigo-800 dark:text-indigo-300">
+            <p className="font-semibold text-keepo-800 dark:text-keepo-300">
               {zh ? '偵測到剪貼簿網址' : 'URL detected in clipboard'}
             </p>
-            <p className="text-indigo-600 dark:text-indigo-400 truncate">{clipboardUrl}</p>
+            <p className="text-keepo-600 dark:text-keepo-400 truncate">{clipboardUrl}</p>
           </div>
-          <button onClick={applyClipboardUrl} className="shrink-0 px-2.5 py-1 bg-indigo-600 text-white rounded-lg font-semibold">
+          <button onClick={applyClipboardUrl} className="shrink-0 px-2.5 py-1 bg-keepo-600 text-white rounded-lg font-semibold">
             {zh ? '使用' : 'Use'}
           </button>
-          <button onClick={() => setClipboardUrl(null)} className="shrink-0 text-indigo-400 hover:text-indigo-600">
+          <button onClick={() => setClipboardUrl(null)} className="shrink-0 text-keepo-400 hover:text-keepo-600">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -533,7 +533,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
             htmlFor="toggle-analyze-image"
             className="flex items-center gap-3 p-3 bg-stone-50 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 rounded-xl cursor-pointer hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <Sparkles className="w-3.5 h-3.5 text-keepo-500" />
             <div className="flex-1 min-w-0">
               <p className="text-xs font-sans font-semibold text-stone-800 dark:text-stone-200">
                 {zh ? '立即 AI 讀圖分析' : 'Analyze with Vision AI now'}
@@ -714,7 +714,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
               onChange: () => setAnalyzeNow(v => !v),
               label: zh ? '立即 AI 分析' : 'Analyze with AI now',
               desc: zh ? 'Groq AI 自動產生摘要、重點與標籤建議' : 'Groq AI generates summary, key points & tag suggestions',
-              icon: <Sparkles className="w-3.5 h-3.5 text-indigo-500" />,
+              icon: <Sparkles className="w-3.5 h-3.5 text-keepo-500" />,
             },
             {
               id: 'context',

@@ -40,9 +40,7 @@ export function MobileHeader({
   return (
     <header className="md:hidden flex items-center justify-between px-4 h-14 border-b border-stone-200 dark:border-stone-850 bg-white dark:bg-stone-900/95 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200">
       <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-stone-950 text-white dark:bg-stone-50 dark:text-stone-950">
-          <span className="font-mono text-xs font-bold">C</span>
-        </div>
+        <img src="/icons/icon-standard.svg" alt="Keepo" className="w-7 h-7 rounded-lg shrink-0" />
         <span className="font-sans text-xs font-bold text-stone-900 dark:text-stone-100 tracking-tight">
           {t.brandName}
         </span>
@@ -101,9 +99,7 @@ export function MobileDrawer({
         {/* Drawer Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-250 dark:border-stone-850">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-stone-950 text-white dark:bg-stone-50 dark:text-stone-950">
-              <span className="font-mono text-xs font-bold">C</span>
-            </div>
+            <img src="/icons/icon-standard.svg" alt="Keepo" className="w-7 h-7 rounded-lg shrink-0" />
             <span className="font-sans text-xs font-bold text-stone-900 dark:text-stone-100 tracking-tight">
               {t.brandName}
             </span>

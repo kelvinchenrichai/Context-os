@@ -170,7 +170,7 @@ export default function Library({
           <div className="flex gap-2 flex-1 flex-wrap">
             <button
               onClick={() => setBatchAction(batchAction === 'move' ? null : 'move')}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-semibold transition-colors ${batchAction === 'move' ? 'bg-indigo-500' : 'bg-stone-700 hover:bg-stone-600'}`}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-semibold transition-colors ${batchAction === 'move' ? 'bg-keepo-500' : 'bg-stone-700 hover:bg-stone-600'}`}
             >
               <FolderInput className="w-3.5 h-3.5" />
               {zh ? '移動到' : 'Move to'}
@@ -312,7 +312,8 @@ export default function Library({
 
       {/* Grid of Results */}
       {filteredSources.length === 0 ? (
-        <div className="text-center py-20 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
+        <div className="text-center py-20 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 space-y-3">
+          <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto" />
           <p className="text-xs text-stone-400">{zh ? '找不到符合篩選條件的資料。' : 'No resources found matching the specified filters.'}</p>
         </div>
       ) : (
@@ -327,7 +328,7 @@ export default function Library({
                 onClick={() => batchMode ? toggleSelect(source.id) : onViewSource(source.id)}
                 className={`group bg-white dark:bg-stone-900 border rounded-xl p-5 shadow-sm transition-colors flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'border-indigo-400 dark:border-indigo-600 ring-1 ring-indigo-300 dark:ring-indigo-700'
+                    ? 'border-keepo-400 dark:border-keepo-600 ring-1 ring-keepo-300 dark:ring-keepo-700'
                     : 'border-stone-200 dark:border-stone-800 hover:border-stone-400 dark:hover:border-stone-700'
                 }`}
               >
@@ -347,8 +348,8 @@ export default function Library({
                         className={`shrink-0 p-1.5 rounded-md border transition-all ${
                           batchMode
                             ? isSelected
-                              ? 'bg-indigo-500 border-indigo-500 text-white'
-                              : 'border-stone-300 dark:border-stone-600 text-transparent hover:border-indigo-400'
+                              ? 'bg-keepo-500 border-keepo-500 text-white'
+                              : 'border-stone-300 dark:border-stone-600 text-transparent hover:border-keepo-400'
                             : source.includeInContext
                               ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
                               : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'

@@ -160,7 +160,7 @@ export default function ShareReceiver({ projects, categories, onCreateCategory, 
         </div>
         <div>
           <h1 className="font-sans text-sm font-bold text-stone-900 dark:text-stone-100 leading-tight">
-            Save to Context OS
+            Save to Keepo
           </h1>
           <p className="font-sans text-[11px] text-stone-400 dark:text-stone-500 mt-0.5">
             iOS / Android Share Target Simulation

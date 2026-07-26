@@ -61,9 +61,7 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
       <div className="text-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-stone-900 dark:bg-stone-100 mx-auto flex items-center justify-center animate-pulse">
-          <span className="font-mono text-lg font-bold text-white dark:text-stone-900">C</span>
-        </div>
+        <img src="/mascot/mascot-thinking.svg" alt="" className="w-14 h-14 mx-auto animate-pulse" />
         <div className="space-y-1">
           <p className="text-sm font-sans font-semibold text-stone-700 dark:text-stone-300">
             登入中，請稍候...

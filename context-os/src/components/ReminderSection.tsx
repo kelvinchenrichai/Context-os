@@ -238,7 +238,7 @@ export default function ReminderSection({ projects, lang, filterProjectId }: Rem
         <div className="lg:col-span-5 space-y-4">
           <div className="p-4 bg-stone-50/60 dark:bg-stone-950/40 rounded-xl border border-stone-150 dark:border-stone-850 space-y-4">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+              <Sparkles className="w-3.5 h-3.5 text-keepo-500" />
               {lang === 'zh-TW' ? '新增記事與提醒' : 'Add Note / Memo'}
             </h4>
 
@@ -444,12 +444,12 @@ export default function ReminderSection({ projects, lang, filterProjectId }: Rem
                           >
                             {playingAudioId === rem.id ? (
                               <>
-                                <Pause className="w-3 h-3 text-indigo-500 shrink-0" />
+                                <Pause className="w-3 h-3 text-keepo-500 shrink-0" />
                                 <span className="animate-pulse">Playing...</span>
                               </>
                             ) : (
                               <>
-                                <Play className="w-3 h-3 text-indigo-500 shrink-0" />
+                                <Play className="w-3 h-3 text-keepo-500 shrink-0" />
                                 <span>Play Recording</span>
                               </>
                             )}
@@ -457,10 +457,10 @@ export default function ReminderSection({ projects, lang, filterProjectId }: Rem
                           
                           {playingAudioId === rem.id && (
                             <div className="flex items-center gap-0.5">
-                              <span className="w-0.5 bg-indigo-500 h-2.5 animate-bounce" style={{ animationDelay: '0.1s' }} />
-                              <span className="w-0.5 bg-indigo-500 h-4 animate-bounce" style={{ animationDelay: '0.3s' }} />
-                              <span className="w-0.5 bg-indigo-500 h-3 animate-bounce" style={{ animationDelay: '0.2s' }} />
-                              <span className="w-0.5 bg-indigo-500 h-1 animate-bounce" style={{ animationDelay: '0.4s' }} />
+                              <span className="w-0.5 bg-keepo-500 h-2.5 animate-bounce" style={{ animationDelay: '0.1s' }} />
+                              <span className="w-0.5 bg-keepo-500 h-4 animate-bounce" style={{ animationDelay: '0.3s' }} />
+                              <span className="w-0.5 bg-keepo-500 h-3 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                              <span className="w-0.5 bg-keepo-500 h-1 animate-bounce" style={{ animationDelay: '0.4s' }} />
                             </div>
                           )}
                         </div>

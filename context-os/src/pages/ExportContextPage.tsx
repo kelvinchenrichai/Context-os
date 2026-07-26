@@ -289,6 +289,15 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                 <Download className="w-4 h-4" />
                 <span>{t.downloadMarkdown}</span>
               </button>
+
+              {copied && (
+                <div className="flex items-center justify-center gap-2 pt-1 animate-in fade-in duration-200">
+                  <img src="/mascot/mascot-happy.svg" alt="" className="w-6 h-6" />
+                  <span className="text-xs text-stone-500 dark:text-stone-400 font-sans">
+                    {lang === 'zh-TW' ? '波波：這個專案的AI背景已經準備好囉！' : "Keepo's ready — paste this into your AI of choice!"}
+                  </span>
+                </div>
+              )}
             </div>
 
           </div>

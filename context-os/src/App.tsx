@@ -168,14 +168,14 @@ export default function App() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({});
 
-  const showToast = (type: ToastType, text: string) => {
+  const showToast = (type: ToastType, text: string, mascot?: string) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-    setToasts(prev => [...prev, { id, type, text }]);
+    setToasts(prev => [...prev, { id, type, text, mascot }]);
     return id;
   };
   const dismissToast = (id: string) => setToasts(prev => prev.filter(t => t.id !== id));
-  const updateToast = (id: string, type: ToastType, text: string) => {
-    setToasts(prev => prev.map(t => t.id === id ? { ...t, type, text } : t));
+  const updateToast = (id: string, type: ToastType, text: string, mascot?: string) => {
+    setToasts(prev => prev.map(t => t.id === id ? { ...t, type, text, mascot } : t));
     if (type !== 'loading') setTimeout(() => dismissToast(id), 3000);
   };
 
@@ -330,11 +330,11 @@ export default function App() {
       return;
     }
     setSubmitting(prev => ({ ...prev, createProject: true }));
-    const toastId = showToast('loading', lang === 'zh-TW' ? '建立專案中…' : 'Creating project…');
+    const toastId = showToast('loading', lang === 'zh-TW' ? '建立專案中…' : 'Creating project…', '/mascot/mascot-thinking.svg');
     try {
       const { id } = await apiCreateProject({ name, description, type, color, status, tags: [type.toUpperCase()] });
       await loadData();
-      updateToast(toastId, 'success', lang === 'zh-TW' ? `✓ 已建立「${name}」` : `✓ Created "${name}"`);
+      updateToast(toastId, 'success', lang === 'zh-TW' ? `✓ 已建立「${name}」` : `✓ Created "${name}"`, '/mascot/mascot-happy.svg');
       navigate(`/projects/${id}`);
     } catch (e: any) {
       updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '建立失敗' : 'Failed to create'));
@@ -367,7 +367,8 @@ export default function App() {
   }) => {
     const toastId = showToast('loading', sourceData.analyzeNow
       ? (lang === 'zh-TW' ? '儲存並分析中…' : 'Saving & analyzing…')
-      : (lang === 'zh-TW' ? '儲存中…' : 'Saving…'));
+      : (lang === 'zh-TW' ? '儲存中…' : 'Saving…'),
+      '/mascot/mascot-thinking.svg');
     try {
       const { id } = await apiCreateSource({
         ...sourceData,
@@ -380,9 +381,11 @@ export default function App() {
       });
 
       // If analyzeNow, wait for AI analysis to complete before refreshing data
+      let analyzed = false;
       if (sourceData.analyzeNow && id) {
         try {
           await analyzeSource(id);
+          analyzed = true;
         } catch (e) {
           console.error('AI analysis failed:', e);
         }
@@ -391,9 +394,11 @@ export default function App() {
       await loadData();
       updateToast(toastId, 'success', sourceData.type === 'image'
         ? (lang === 'zh-TW' ? '✓ 圖片已儲存' : '✓ Image saved')
-        : (lang === 'zh-TW' ? '✓ 已儲存資料來源' : '✓ Source saved'));
+        : (lang === 'zh-TW' ? '✓ 已儲存資料來源' : '✓ Source saved'),
+        analyzed ? '/mascot/mascot-surprised.svg' : '/mascot/mascot-happy.svg');
     } catch (e: any) {
-      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '儲存失敗' : 'Failed to save'));
+      updateToast(toastId, 'error', e.message || (lang === 'zh-TW' ? '儲存失敗' : 'Failed to save'),
+        '/mascot/mascot-sorry.svg');
     }
   };
 

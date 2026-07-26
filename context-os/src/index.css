@@ -36,8 +36,8 @@
   --stone-600: #1E293B;  /* Fine border line and dark separator */
   --stone-700: #1A2030;  /* Slightly lighter dark background for active items */
   --stone-800: #111622;  /* Premium dark card / panel surface background (extremely clean) */
-  --stone-900: #0E131F;  /* Deep cosmic obsidian canvas background */
-  --stone-950: #080C14;  /* Ultra-dark graphite black for sidebar and layout wrapping */
+  --stone-900: #211C3D;  /* Purple-tinted dark canvas background (Keepo v3 dark mode) */
+  --stone-950: #1A1730;  /* Purple-tinted darkest background — Keepo v3 dark mode, sidebar/layout wrapping */
 }
 
 @theme {
@@ -54,9 +54,9 @@
   --color-keepo-200: #D0C8EC;
   --color-keepo-300: #B7ACDE;
   --color-keepo-400: #A79AFF;
-  --color-keepo-500: #7A6BC0;
-  --color-keepo-600: #3D3570;
-  --color-keepo-700: #322B5C;
+  --color-keepo-500: #8172D1;
+  --color-keepo-600: #5A4FBF;
+  --color-keepo-700: #3D3570;
   --color-keepo-800: #252048;
   --color-keepo-900: #1F1A3D;
   --color-keepo-950: #1A1730;

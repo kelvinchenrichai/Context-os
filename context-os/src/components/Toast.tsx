@@ -7,6 +7,7 @@ export interface ToastMessage {
   id: string;
   type: ToastType;
   text: string;
+  mascot?: string;
 }
 
 interface ToastContainerProps {
@@ -39,6 +40,15 @@ function ToastItem({ toast, onDismiss }: { toast: ToastMessage; onDismiss: (id: 
     const timer = setTimeout(() => onDismiss(toast.id), 3000);
     return () => clearTimeout(timer);
   }, [toast.id, toast.type]);
+
+  if (toast.mascot) {
+    return (
+      <div className="pointer-events-auto flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 rounded-2xl text-xs font-sans font-semibold shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-full">
+        <img src={toast.mascot} alt="" className="w-9 h-9 shrink-0" />
+        <span className="leading-snug">{toast.text}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-xs font-sans font-semibold shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-full">

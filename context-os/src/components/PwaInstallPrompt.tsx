@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Download, Share, Plus, Smartphone } from 'lucide-react';
+import { X, Share, Plus, Smartphone } from 'lucide-react';
 import { Language } from '../types';
 
 interface PwaInstallPromptProps {
@@ -56,9 +56,7 @@ export default function PwaInstallPrompt({ lang }: PwaInstallPromptProps) {
   if (showPrompt && !dismissed) {
     return (
       <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-80 z-50 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-xl p-4 flex items-start gap-3 animate-in slide-in-from-bottom-4">
-        <div className="p-2 bg-stone-900 dark:bg-stone-100 rounded-lg shrink-0">
-          <Download className="w-4 h-4 text-white dark:text-stone-900" />
-        </div>
+        <img src="/icons/icon-standard.svg" alt="" className="w-9 h-9 rounded-lg shrink-0" />
         <div className="flex-1 min-w-0 space-y-1">
           <p className="text-xs font-sans font-bold text-stone-900 dark:text-stone-100">
             {zh ? '安裝記波 Keepo App' : 'Install Keepo'}

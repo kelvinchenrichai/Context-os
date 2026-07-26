@@ -274,7 +274,8 @@ export default function ProjectDetail({
                   Recent Additions in this Workspace
                 </h3>
                 {projectSources.length === 0 ? (
-                  <div className="text-center py-8 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
+                  <div className="text-center py-8 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 space-y-2">
+                    <img src="/mascot/mascot-sorry.svg" alt="" className="w-10 h-10 mx-auto" />
                     <p className="text-xs text-stone-400">{lang === 'zh-TW' ? '尚未新增任何來源。' : 'No sources indexed yet.'}</p>
                   </div>
                 ) : (
@@ -350,6 +351,7 @@ export default function ProjectDetail({
 
             {projectSources.length === 0 ? (
               <div className="text-center py-16 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
+                <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto mb-3" />
                 <p className="text-xs text-stone-400">No resources have been captured yet in this project.</p>
                 <button
                   onClick={onAddSourceClick}

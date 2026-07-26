@@ -282,6 +282,9 @@ export default function OnboardingTour({
 
         {/* Content */}
         <div className="px-5 py-4">
+          {currentStep === TOUR_STEPS.length - 1 && (
+            <img src="/mascot/mascot-happy.svg" alt="" className="w-12 h-12 mx-auto mb-3" />
+          )}
           <p className="text-xs font-sans text-stone-600 dark:text-stone-400 leading-relaxed whitespace-pre-line">
             {zh ? step.contentZh : step.contentEn}
           </p>

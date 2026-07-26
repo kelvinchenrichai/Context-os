@@ -72,6 +72,72 @@ function tabIdToPath(tab: string): string {
   }
 }
 
+// ─── Route wrappers ───────────────────────────────────────────────────────
+// Defined at module scope (not inside App) so their function identity stays
+// stable across App re-renders. Defining these inline inside App used to
+// make React remount ProjectDetail/SourceDetail (and drop their local state,
+// e.g. the "analyzing" flag mid re-analyze) any time unrelated App state
+// changed, since <Route element={<Comp/>}> compares by component identity.
+
+interface ProjectDetailRouteProps {
+  projects: Project[];
+  sources: Source[];
+  navigate: ReturnType<typeof useNavigate>;
+  handleDeleteProject: (id: string, projectName?: string) => Promise<void>;
+  handleToggleIncludeInContext: (id: string) => Promise<void>;
+  handleUpdateProjectStatus: (id: string, status: ProjectStatus) => Promise<void>;
+  lang: Language;
+}
+
+function ProjectDetailRoute({
+  projects, sources, navigate,
+  handleDeleteProject, handleToggleIncludeInContext, handleUpdateProjectStatus, lang,
+}: ProjectDetailRouteProps) {
+  const { projectId } = useParams();
+  const proj = projects.find(p => p.id === projectId);
+  if (!proj) return <div className="p-8 text-xs">Project not found.</div>;
+  return (
+    <ProjectDetail
+      project={proj} sources={sources}
+      onBack={() => navigate(-1)}
+      onAddSourceClick={() => navigate(`/capture?projectId=${proj.id}`)}
+      onViewSource={(id) => navigate(`/sources/${id}`)}
+      onDeleteProject={handleDeleteProject}
+      onToggleIncludeInContext={handleToggleIncludeInContext}
+      onUpdateProjectStatus={handleUpdateProjectStatus}
+      lang={lang}
+    />
+  );
+}
+
+interface SourceDetailRouteProps {
+  sources: Source[];
+  projects: Project[];
+  navigate: ReturnType<typeof useNavigate>;
+  handleDeleteSource: (id: string) => Promise<void>;
+  handleUpdateSource: (id: string, data: Partial<Source>) => Promise<void>;
+  loadData: () => Promise<void>;
+  lang: Language;
+}
+
+function SourceDetailRoute({
+  sources, projects, navigate, handleDeleteSource, handleUpdateSource, loadData, lang,
+}: SourceDetailRouteProps) {
+  const { sourceId } = useParams();
+  const src = sources.find(s => s.id === sourceId);
+  if (!src) return <div className="p-8 text-xs">Source not found.</div>;
+  return (
+    <SourceDetail
+      source={src} projects={projects}
+      onBack={() => navigate(-1)}
+      onDelete={handleDeleteSource}
+      onUpdate={handleUpdateSource}
+      onMoved={loadData}
+      lang={lang}
+    />
+  );
+}
+
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -429,42 +495,6 @@ export default function App() {
   const handleToggleApiKey = (id: string) => saveApiKeys(apiKeys.map(k => k.id === id ? { ...k, isActive: !k.isActive } : k));
   const setPlan = (p: PlanId) => { setPlanState(p); localStorage.setItem('context_os_plan', p); };
 
-  // ─── Route wrappers ───────────────────────────────────────────────────────
-
-  const ProjectDetailRoute = () => {
-    const { projectId } = useParams();
-    const proj = projects.find(p => p.id === projectId);
-    if (!proj) return <div className="p-8 text-xs">Project not found.</div>;
-    return (
-      <ProjectDetail
-        project={proj} sources={sources}
-        onBack={() => navigate(-1)}
-        onAddSourceClick={() => navigate(`/capture?projectId=${proj.id}`)}
-        onViewSource={(id) => navigate(`/sources/${id}`)}
-        onDeleteProject={handleDeleteProject}
-        onToggleIncludeInContext={handleToggleIncludeInContext}
-        onUpdateProjectStatus={handleUpdateProjectStatus}
-        lang={lang}
-      />
-    );
-  };
-
-  const SourceDetailRoute = () => {
-    const { sourceId } = useParams();
-    const src = sources.find(s => s.id === sourceId);
-    if (!src) return <div className="p-8 text-xs">Source not found.</div>;
-    return (
-      <SourceDetail
-        source={src} projects={projects}
-        onBack={() => navigate(-1)}
-        onDelete={handleDeleteSource}
-        onUpdate={handleUpdateSource}
-        onMoved={loadData}
-        lang={lang}
-      />
-    );
-  };
-
   // ─── Loading / Auth gates ─────────────────────────────────────────────────
 
   if (authLoading) {
@@ -519,7 +549,15 @@ export default function App() {
               <CreateProject categories={categories} onCreateCategory={handleCreateCategory}
                 onSave={handleCreateProject} onBack={() => navigate(-1)} lang={lang} />
             } />
-            <Route path="/projects/:projectId" element={<ProjectDetailRoute />} />
+            <Route path="/projects/:projectId" element={
+              <ProjectDetailRoute
+                projects={projects} sources={sources} navigate={navigate}
+                handleDeleteProject={handleDeleteProject}
+                handleToggleIncludeInContext={handleToggleIncludeInContext}
+                handleUpdateProjectStatus={handleUpdateProjectStatus}
+                lang={lang}
+              />
+            } />
             <Route path="/capture" element={
               <SaveURL projects={projects} categories={categories} onCreateCategory={handleCreateCategory}
                 onSave={handleSaveSource} onBack={() => navigate(-1)} lang={lang} />
@@ -533,7 +571,15 @@ export default function App() {
                 onViewSource={(id) => navigate(`/sources/${id}`)}
                 onToggleIncludeInContext={handleToggleIncludeInContext} onRefresh={loadData} lang={lang} />
             } />
-            <Route path="/sources/:sourceId" element={<SourceDetailRoute />} />
+            <Route path="/sources/:sourceId" element={
+              <SourceDetailRoute
+                sources={sources} projects={projects} navigate={navigate}
+                handleDeleteSource={handleDeleteSource}
+                handleUpdateSource={handleUpdateSource}
+                loadData={loadData}
+                lang={lang}
+              />
+            } />
             <Route path="/tags" element={
               <TagsPage sources={sources} projects={projects}
                 onViewSource={(id) => navigate(`/sources/${id}`)} lang={lang} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { setToken } from '../api';
+import { PENDING_COPY_KEY } from './PublicProjectPage';
 
 interface AuthCallbackProps {
   onLogin: () => Promise<void>;
@@ -17,11 +18,16 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
 
     if (token) {
       setToken(token);
+      // If the user got here via "copy this public project" while logged
+      // out, send them back to that project's page instead of the
+      // dashboard — it auto-resumes the copy once it sees the new token.
+      const pendingCopySlug = localStorage.getItem(PENDING_COPY_KEY);
+      const dest = pendingCopySlug ? `/p/${pendingCopySlug}` : '/';
       // Use replace to avoid back-button issues, try multiple methods for iOS PWA
       try {
-        window.location.replace('/');
+        window.location.replace(dest);
       } catch {
-        window.location.href = '/';
+        window.location.href = dest;
       }
       return;
     }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { 
+import { useSearchParams } from 'react-router-dom';
+import {
   ArrowLeft, 
   Layers, 
   FileText, 
@@ -17,7 +18,10 @@ import {
   Check,
   ChevronRight,
   Clipboard,
-  ExternalLink
+  ExternalLink,
+  Share2,
+  Globe,
+  Copy as CopyIcon
 } from 'lucide-react';
 import { Project, Source, Language } from '../types';
 import { TRANSLATIONS } from '../data';
@@ -32,6 +36,7 @@ interface ProjectDetailProps {
   onDeleteProject: (id: string) => void;
   onToggleIncludeInContext: (id: string) => void;
   onUpdateProjectStatus: (id: string, status: 'idea' | 'planning' | 'in_progress' | 'done') => void;
+  onTogglePublic: (id: string, isPublic: boolean) => Promise<void>;
   lang: Language;
 }
 
@@ -44,11 +49,35 @@ export default function ProjectDetail({
   onDeleteProject,
   onToggleIncludeInContext,
   onUpdateProjectStatus,
+  onTogglePublic,
   lang
 }: ProjectDetailProps) {
   const t = TRANSLATIONS[lang];
   const [activeTab, setActiveTab] = useState<'overview' | 'sources' | 'knowledge' | 'tags' | 'relations' | 'export' | 'todo'>('overview');
   const [copied, setCopied] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showWelcome, setShowWelcome] = useState(searchParams.get('welcome') === '1');
+  const [showSharePanel, setShowSharePanel] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const publicUrl = project.publicSlug ? `https://context-os-12u.pages.dev/p/${project.publicSlug}` : '';
+
+  const handleTogglePublicClick = async () => {
+    setPublishing(true);
+    try {
+      await onTogglePublic(project.id, !project.isPublic);
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (!publicUrl) return;
+    navigator.clipboard.writeText(publicUrl);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   // Filter sources belonging to this project
   const projectSources = sources.filter(s => s.projectId === project.id);
@@ -116,14 +145,27 @@ export default function ProjectDetail({
 
         <div className="flex items-center gap-2">
           <button
+            id="btn-project-share"
+            onClick={() => setShowSharePanel(v => !v)}
+            className={`px-3 py-1.5 border text-xs font-sans font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer transition-colors ${
+              project.isPublic
+                ? 'border-keepo-600 dark:border-keepo-400 text-keepo-600 dark:text-keepo-400'
+                : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:border-stone-400'
+            }`}
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>{project.isPublic ? (lang === 'zh-TW' ? '已公開分享' : 'Shared') : (lang === 'zh-TW' ? '分享專案' : 'Share')}</span>
+          </button>
+
+          <button
             id="btn-project-add-source"
             onClick={onAddSourceClick}
-            className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-keepo-950 text-xs font-sans font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-keepo-600 hover:bg-keepo-700 dark:bg-keepo-400 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 text-xs font-sans font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{lang === 'zh-TW' ? '新增收藏來源' : 'Capture Source'}</span>
           </button>
-          
+
           <button
             id="btn-project-delete"
             onClick={() => {
@@ -138,6 +180,73 @@ export default function ProjectDetail({
           </button>
         </div>
       </div>
+
+      {showWelcome && (
+        <div className="flex items-center gap-3 bg-white dark:bg-stone-900 border border-keepo-200 dark:border-keepo-800 rounded-xl p-4 shadow-sm">
+          <img src="/mascot/mascot-happy.svg" alt="" className="w-10 h-10 shrink-0" />
+          <p className="text-xs text-stone-600 dark:text-stone-300 font-sans flex-1">
+            {lang === 'zh-TW'
+              ? '波波：這個專案已經複製到你的帳號囉，現在完全屬於你，可以自由編輯！'
+              : "Keepo: this project is now yours — copied in full, edit it however you like!"}
+          </p>
+          <button
+            onClick={() => { setShowWelcome(false); searchParams.delete('welcome'); setSearchParams(searchParams, { replace: true }); }}
+            className="shrink-0 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 text-xs font-semibold"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {showSharePanel && (
+        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-stone-400" />
+              <span className="text-xs font-sans font-semibold text-stone-700 dark:text-stone-300">
+                {lang === 'zh-TW' ? '公開分享此專案' : 'Publicly share this project'}
+              </span>
+            </div>
+            <button
+              onClick={handleTogglePublicClick}
+              disabled={publishing}
+              className={`w-10 h-5.5 rounded-full transition-colors relative disabled:opacity-50 ${
+                project.isPublic ? 'bg-keepo-600 dark:bg-keepo-400' : 'bg-stone-200 dark:bg-stone-700'
+              }`}
+            >
+              <span className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full transition-transform ${
+                project.isPublic ? 'translate-x-5' : 'translate-x-0.5'
+              }`} />
+            </button>
+          </div>
+          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-relaxed">
+            {lang === 'zh-TW'
+              ? '公開後，任何人都能透過連結預覽這個專案，並複製一份到他們自己的帳號（含AI分析結果）。'
+              : 'Anyone with the link can preview this project and copy it to their own account, AI analysis included.'}
+          </p>
+          {project.isPublic && publicUrl && (
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                readOnly
+                value={publicUrl}
+                className="flex-1 min-w-0 bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-lg px-3 py-2 text-xs font-mono text-stone-600 dark:text-stone-300"
+              />
+              <button
+                onClick={handleCopyLink}
+                className="shrink-0 px-3 py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+              >
+                {linkCopied ? <Check className="w-3.5 h-3.5" /> : <CopyIcon className="w-3.5 h-3.5" />}
+                {linkCopied ? (lang === 'zh-TW' ? '已複製' : 'Copied') : (lang === 'zh-TW' ? '複製連結' : 'Copy')}
+              </button>
+            </div>
+          )}
+          {project.isPublic && (project.copyCount ?? 0) > 0 && (
+            <p className="text-[11px] text-stone-400 dark:text-stone-500">
+              {lang === 'zh-TW' ? `已被複製 ${project.copyCount} 次` : `Copied ${project.copyCount} times`}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Project Brand Header Banner */}
       <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 shadow-sm">

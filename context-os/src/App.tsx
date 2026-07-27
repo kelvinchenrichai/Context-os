@@ -8,6 +8,7 @@ import { INITIAL_CATEGORIES, TRANSLATIONS } from './data';
 import {
   getToken, setToken, clearToken, getMe,
   fetchProjects, createProject as apiCreateProject, updateProject as apiUpdateProject, deleteProject as apiDeleteProject,
+  publishProject as apiPublishProject,
   fetchSources, createSource as apiCreateSource, updateSource as apiUpdateSource, deleteSource as apiDeleteSource,
   fetchCategories, createCategory as apiCreateCategory, renameCategory as apiRenameCategory, deleteCategory as apiDeleteCategory,
   analyzeSource,
@@ -24,6 +25,7 @@ import ToastContainer, { ToastMessage, ToastType } from './components/Toast';
 // Pages
 import LoginPage from './pages/LoginPage';
 import AuthCallback from './pages/AuthCallback';
+import PublicProjectPage from './pages/PublicProjectPage';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import CreateProject from './pages/CreateProject';
@@ -86,12 +88,13 @@ interface ProjectDetailRouteProps {
   handleDeleteProject: (id: string, projectName?: string) => Promise<void>;
   handleToggleIncludeInContext: (id: string) => Promise<void>;
   handleUpdateProjectStatus: (id: string, status: ProjectStatus) => Promise<void>;
+  handleTogglePublic: (id: string, isPublic: boolean) => Promise<void>;
   lang: Language;
 }
 
 function ProjectDetailRoute({
   projects, sources, navigate,
-  handleDeleteProject, handleToggleIncludeInContext, handleUpdateProjectStatus, lang,
+  handleDeleteProject, handleToggleIncludeInContext, handleUpdateProjectStatus, handleTogglePublic, lang,
 }: ProjectDetailRouteProps) {
   const { projectId } = useParams();
   const proj = projects.find(p => p.id === projectId);
@@ -105,6 +108,7 @@ function ProjectDetailRoute({
       onDeleteProject={handleDeleteProject}
       onToggleIncludeInContext={handleToggleIncludeInContext}
       onUpdateProjectStatus={handleUpdateProjectStatus}
+      onTogglePublic={handleTogglePublic}
       lang={lang}
     />
   );
@@ -273,6 +277,9 @@ export default function App() {
       tags: Array.isArray(p.tags) ? p.tags : JSON.parse(p.tags || '[]'),
       createdAt: p.created_at || p.createdAt || new Date().toISOString(),
       updatedAt: p.updated_at || p.updatedAt || new Date().toISOString(),
+      isPublic: !!(p.is_public ?? p.isPublic),
+      publicSlug: p.public_slug ?? p.publicSlug ?? null,
+      copyCount: p.copy_count ?? p.copyCount ?? 0,
     };
   }
 
@@ -358,6 +365,11 @@ export default function App() {
   const handleUpdateProjectStatus = async (id: string, status: ProjectStatus) => {
     await apiUpdateProject(id, { status });
     setProjects(prev => prev.map(p => p.id === id ? { ...p, status } : p));
+  };
+
+  const handleTogglePublic = async (id: string, isPublic: boolean) => {
+    const { publicSlug } = await apiPublishProject(id, isPublic);
+    setProjects(prev => prev.map(p => p.id === id ? { ...p, isPublic, publicSlug } : p));
   };
 
   const handleSaveSource = async (sourceData: {
@@ -518,6 +530,12 @@ export default function App() {
     return <AuthCallback onLogin={handleLogin} />;
   }
 
+  // Public project preview/copy pages work for anyone, logged in or not
+  if (location.pathname.startsWith('/p/')) {
+    const slug = location.pathname.slice('/p/'.length);
+    return <PublicProjectPage slug={slug} lang={lang} />;
+  }
+
   if (!isLoggedIn) {
     return <LoginPage onLogin={handleLogin} />;
   }
@@ -558,6 +576,7 @@ export default function App() {
                 handleDeleteProject={handleDeleteProject}
                 handleToggleIncludeInContext={handleToggleIncludeInContext}
                 handleUpdateProjectStatus={handleUpdateProjectStatus}
+                handleTogglePublic={handleTogglePublic}
                 lang={lang}
               />
             } />

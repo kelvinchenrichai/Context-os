@@ -14,6 +14,9 @@ export interface Project {
   tags: string[];
   summary: string;
   status?: ProjectStatus;
+  isPublic?: boolean;
+  publicSlug?: string | null;
+  copyCount?: number;
 }
 
 export type SourceType =

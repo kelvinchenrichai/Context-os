@@ -78,6 +78,41 @@ export async function deleteProject(id: string) {
   return apiFetch<{ deleted: boolean }>(`/api/v1/projects/${id}`, { method: 'DELETE' });
 }
 
+export async function publishProject(id: string, isPublic: boolean) {
+  return apiFetch<{ isPublic: boolean; publicSlug: string | null }>(`/api/v1/projects/${id}/publish`, {
+    method: 'PATCH',
+    body: JSON.stringify({ isPublic }),
+  });
+}
+
+// ─── Public project sharing (no auth needed to view) ──────────────────────────
+
+export interface PublicProject {
+  name: string;
+  description: string;
+  type: string;
+  color: string;
+  tags: string[];
+  copyCount: number;
+  sources: {
+    title: string;
+    url: string;
+    platform: string;
+    category: string;
+    aiSummary: string;
+    aiKeyPoints: string[];
+    aiSuggestedTags: string[];
+  }[];
+}
+
+export async function fetchPublicProject(slug: string) {
+  return apiFetch<PublicProject>(`/api/v1/public/projects/${slug}`);
+}
+
+export async function copyPublicProject(slug: string) {
+  return apiFetch<{ id: string }>(`/api/v1/public/projects/${slug}/copy`, { method: 'POST' });
+}
+
 // ─── Sources ──────────────────────────────────────────────────────────────────
 
 export async function fetchSources(projectId?: string) {

@@ -132,7 +132,7 @@ export default function Settings({
                   onClick={() => setLang('en')}
                   className={`flex-1 py-1.5 rounded-lg border text-center font-sans font-semibold transition-colors cursor-pointer ${
                     lang === 'en'
-                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-keepo-950'
+                      ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
                       : 'bg-white border-stone-200 dark:bg-stone-900 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-450'
                   }`}
                 >
@@ -143,7 +143,7 @@ export default function Settings({
                   onClick={() => setLang('zh-TW')}
                   className={`flex-1 py-1.5 rounded-lg border text-center font-sans font-semibold transition-colors cursor-pointer ${
                     lang === 'zh-TW'
-                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-keepo-950'
+                      ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
                       : 'bg-white border-stone-200 dark:bg-stone-900 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-450'
                   }`}
                 >
@@ -165,7 +165,7 @@ export default function Settings({
                   onClick={() => setTheme('light')}
                   className={`flex-1 py-1.5 rounded-lg border text-center font-sans font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-xs ${
                     theme === 'light'
-                      ? 'bg-stone-900 border-stone-900 text-white shadow-sm'
+                      ? 'bg-keepo-600 border-keepo-600 text-white shadow-sm'
                       : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-300 dark:hover:border-stone-700'
                   }`}
                 >

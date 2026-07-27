@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Copy, Loader2 } from 'lucide-react';
 import { getToken, fetchPublicProject, copyPublicProject, PublicProject } from '../api';
 import { Language } from '../types';
@@ -13,7 +12,6 @@ interface PublicProjectPageProps {
 }
 
 export default function PublicProjectPage({ slug, lang }: PublicProjectPageProps) {
-  const navigate = useNavigate();
   const zh = lang === 'zh-TW';
 
   const [project, setProject] = useState<PublicProject | null>(null);
@@ -57,7 +55,11 @@ export default function PublicProjectPage({ slug, lang }: PublicProjectPageProps
     setError('');
     try {
       const { id } = await copyPublicProject(slug);
-      navigate(`/projects/${id}?welcome=1`);
+      // Full page load, not client-side navigate: the main App's in-memory
+      // projects/sources state was loaded once at mount and has no idea
+      // this brand-new project exists yet — a soft navigate would land on
+      // ProjectDetail before it's in that list, showing "Project not found."
+      window.location.href = `/projects/${id}?welcome=1`;
     } catch (e: any) {
       setError(e.message || (zh ? '複製失敗，請稍後再試' : 'Copy failed, please try again'));
       setCopying(false);
@@ -67,7 +69,7 @@ export default function PublicProjectPage({ slug, lang }: PublicProjectPageProps
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
-        <img src="/mascot/mascot-thinking.svg" alt="" className="w-12 h-12 animate-pulse" />
+        <img src="/mascot/mascot-thinking.svg" alt="" className="w-16 h-16 animate-mascot" />
       </div>
     );
   }
@@ -76,7 +78,7 @@ export default function PublicProjectPage({ slug, lang }: PublicProjectPageProps
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center px-4">
         <div className="text-center space-y-3">
-          <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto" />
+          <img src="/mascot/mascot-sorry.svg" alt="" className="w-20 h-20 mx-auto animate-mascot" />
           <p className="text-sm text-stone-500 dark:text-stone-400 font-sans">
             {zh ? '這個分享連結不存在，或已經取消公開。' : 'This share link doesn\'t exist or is no longer public.'}
           </p>

@@ -98,8 +98,8 @@ const TOUR_STEPS: TourStep[] = [
     targetId: 'sidebar-item-export',
     titleZh: '📦 最後：匯出給 AI 使用',
     titleEn: '📦 Finally: Export for AI',
-    contentZh: '把整個專案的知識打包成一個 Prompt，直接貼進 ChatGPT、Claude 或 Cursor，讓 AI 立刻理解你的專案背景，不用再重複解釋。\n\n這就是記波 Keepo 的核心價值：\n存好資料 → 一鍵匯出 → AI 秒懂你的專案。',
-    contentEn: "Package your entire project knowledge into one prompt. Paste it into ChatGPT, Claude, or Cursor and the AI instantly understands your project context — no more repeated explanations.\n\nThis is Keepo's core value:\nSave content → One-click export → AI understands your project instantly.",
+    contentZh: '把整個專案的內容整理成一份說明，直接貼進 ChatGPT、Claude 或 Cursor，AI 馬上就懂你在做什麼，不用再重複解釋一次。\n\n這就是記波 Keepo 的核心價值：\n存好資料 → 一鍵整理 → AI 秒懂你的專案。',
+    contentEn: "Turn everything in a project into one summary. Paste it into ChatGPT, Claude, or Cursor and the AI instantly gets what you're working on — no more repeating yourself.\n\nThis is Keepo's core value:\nSave content → One click → AI understands your project instantly.",
     placement: 'right',
     tab: 'export',
     actionZh: '去試試匯出',
@@ -283,7 +283,7 @@ export default function OnboardingTour({
         {/* Content */}
         <div className="px-5 py-4">
           {currentStep === TOUR_STEPS.length - 1 && (
-            <img src="/mascot/mascot-happy.svg" alt="" className="w-12 h-12 mx-auto mb-3" />
+            <img src="/mascot/mascot-happy.svg" alt="" className="w-20 h-20 mx-auto mb-3 animate-mascot" />
           )}
           <p className="text-xs font-sans text-stone-600 dark:text-stone-400 leading-relaxed whitespace-pre-line">
             {zh ? step.contentZh : step.contentEn}

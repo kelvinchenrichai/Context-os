@@ -518,7 +518,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
         <div className="text-center space-y-3">
-          <img src="/mascot/mascot-thinking.svg" alt="" className="w-10 h-10 mx-auto" />
+          <img src="/mascot/mascot-thinking.svg" alt="" className="w-16 h-16 mx-auto animate-mascot" />
           <p className="text-xs text-stone-400">Loading...</p>
         </div>
       </div>
@@ -637,7 +637,7 @@ export default function App() {
             <Route path="/auth/callback" element={
               <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
                 <div className="text-center space-y-3">
-                  <img src="/mascot/mascot-thinking.svg" alt="" className="w-10 h-10 mx-auto" />
+                  <img src="/mascot/mascot-thinking.svg" alt="" className="w-16 h-16 mx-auto animate-mascot" />
                   <p className="text-xs text-stone-400">登入中...</p>
                 </div>
               </div>

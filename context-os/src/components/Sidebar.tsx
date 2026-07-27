@@ -65,7 +65,7 @@ export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount, c
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-sans text-xs transition-all duration-150 ${
                 isActive
-                  ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-950 font-bold shadow-md'
+                  ? 'bg-keepo-600 text-white dark:bg-keepo-400 dark:text-keepo-950 font-bold shadow-md'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100/60 dark:hover:bg-stone-900/60 font-medium'
               }`}
             >

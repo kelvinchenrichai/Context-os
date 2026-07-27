@@ -44,7 +44,7 @@ function ToastItem({ toast, onDismiss }: { toast: ToastMessage; onDismiss: (id: 
   if (toast.mascot) {
     return (
       <div className="pointer-events-auto flex items-center gap-3 px-4 py-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 rounded-2xl text-xs font-sans font-semibold shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200 max-w-full">
-        <img src={toast.mascot} alt="" className="w-9 h-9 shrink-0" />
+        <img src={toast.mascot} alt="" className="w-11 h-11 shrink-0 animate-mascot" />
         <span className="leading-snug">{toast.text}</span>
       </div>
     );

@@ -357,7 +357,7 @@ export default function ReminderSection({ projects, lang, filterProjectId }: Rem
                 type="submit"
                 id="btn-add-text-reminder"
                 disabled={!title.trim() || !time}
-                className="w-full py-2 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-keepo-950 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+                className="w-full py-2 bg-keepo-600 hover:bg-keepo-700 dark:bg-keepo-400 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{lang === 'zh-TW' ? '建立文字日程提醒' : 'Add Text Reminder'}</span>

@@ -313,7 +313,7 @@ export default function Library({
       {/* Grid of Results */}
       {filteredSources.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 space-y-3">
-          <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto" />
+          <img src="/mascot/mascot-sorry.svg" alt="" className="w-20 h-20 mx-auto animate-mascot" />
           <p className="text-xs text-stone-400">{zh ? '找不到符合篩選條件的資料。' : 'No resources found matching the specified filters.'}</p>
         </div>
       ) : (
@@ -351,7 +351,7 @@ export default function Library({
                               ? 'bg-keepo-500 border-keepo-500 text-white'
                               : 'border-stone-300 dark:border-stone-600 text-transparent hover:border-keepo-400'
                             : source.includeInContext
-                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
+                              ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
                               : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
                         }`}
                         title={batchMode ? (isSelected ? '取消選取' : '選取') : 'Include in Context Package'}

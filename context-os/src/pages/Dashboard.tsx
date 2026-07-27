@@ -350,23 +350,23 @@ export default function Dashboard({
       <TodoSection projects={projects} lang={lang} />
 
       {/* Export Context Promo Banner */}
-      <section className="bg-stone-900 dark:bg-stone-950 border border-stone-800 dark:border-stone-900 rounded-xl p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <section className="bg-keepo-700 dark:bg-keepo-800 border border-keepo-800 dark:border-keepo-900 rounded-xl p-6 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <div className="p-1 rounded bg-stone-800 text-stone-100">
               <FileCode2 className="w-4 h-4" />
             </div>
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-400">
-              {lang === 'zh-TW' ? 'AI 記憶打包器' : 'Context Packaging Service'}
+              {lang === 'zh-TW' ? '一鍵整理' : 'One-click summary'}
             </span>
           </div>
           <h2 className="text-sm font-semibold font-sans">
-            {lang === 'zh-TW' ? '將專案的所有收藏一鍵打包為 AI Context' : 'Package multiple references into standard AI Context'}
+            {lang === 'zh-TW' ? '把整個專案的資料，一鍵整理給 AI 看' : 'Turn everything you saved into something AI can read'}
           </h2>
           <p className="text-xs text-stone-400 max-w-xl font-sans leading-relaxed">
-            {lang === 'zh-TW' 
-              ? '選擇任何專案，記波 Keepo 會自動彙整程式庫、PDF、網頁與影片重點，輸出為 ChatGPT 或 Claude 最好解讀的語境 Prompts。'
-              : 'Compile your selected PDFs, GitHub repositories, notes and video transcripts into perfectly optimized background knowledge prompts for LLM chats.'}
+            {lang === 'zh-TW'
+              ? '選一個專案，記波 Keepo 會把裡面的程式碼、PDF、網頁、影片重點通通整理好，變成 ChatGPT 或 Claude 一看就懂的內容。'
+              : 'Pick a project and Keepo pulls together the code, PDFs, web pages, and video notes inside it into something ChatGPT or Claude can understand right away.'}
           </p>
         </div>
         <button
@@ -374,7 +374,7 @@ export default function Dashboard({
           onClick={() => setActiveTab('export')}
           className="shrink-0 bg-white hover:bg-stone-100 text-stone-900 text-xs font-semibold px-4 py-2.5 rounded-lg transition-all duration-150 flex items-center justify-center gap-2 self-start md:self-auto"
         >
-          <span>{lang === 'zh-TW' ? '開始產生語境' : 'Generate Context'}</span>
+          <span>{lang === 'zh-TW' ? '開始整理' : 'Get started'}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </section>

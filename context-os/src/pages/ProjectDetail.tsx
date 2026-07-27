@@ -183,7 +183,7 @@ export default function ProjectDetail({
 
       {showWelcome && (
         <div className="flex items-center gap-3 bg-white dark:bg-stone-900 border border-keepo-200 dark:border-keepo-800 rounded-xl p-4 shadow-sm">
-          <img src="/mascot/mascot-happy.svg" alt="" className="w-10 h-10 shrink-0" />
+          <img src="/mascot/mascot-happy.svg" alt="" className="w-14 h-14 shrink-0 animate-mascot" />
           <p className="text-xs text-stone-600 dark:text-stone-300 font-sans flex-1">
             {lang === 'zh-TW'
               ? '波波：這個專案已經複製到你的帳號囉，現在完全屬於你，可以自由編輯！'
@@ -384,7 +384,7 @@ export default function ProjectDetail({
                 </h3>
                 {projectSources.length === 0 ? (
                   <div className="text-center py-8 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900 space-y-2">
-                    <img src="/mascot/mascot-sorry.svg" alt="" className="w-10 h-10 mx-auto" />
+                    <img src="/mascot/mascot-sorry.svg" alt="" className="w-16 h-16 mx-auto animate-mascot" />
                     <p className="text-xs text-stone-400">{lang === 'zh-TW' ? '尚未新增任何來源。' : 'No sources indexed yet.'}</p>
                   </div>
                 ) : (
@@ -460,11 +460,11 @@ export default function ProjectDetail({
 
             {projectSources.length === 0 ? (
               <div className="text-center py-16 border-2 border-dashed border-stone-200 dark:border-stone-800 rounded-xl bg-white dark:bg-stone-900">
-                <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto mb-3" />
+                <img src="/mascot/mascot-sorry.svg" alt="" className="w-20 h-20 mx-auto mb-3 animate-mascot" />
                 <p className="text-xs text-stone-400">No resources have been captured yet in this project.</p>
                 <button
                   onClick={onAddSourceClick}
-                  className="mt-3 px-4 py-1.5 bg-stone-900 text-white rounded-lg text-xs font-semibold"
+                  className="mt-3 px-4 py-1.5 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-xs font-semibold"
                 >
                   Capture First Link
                 </button>
@@ -504,7 +504,7 @@ export default function ProjectDetail({
                           }}
                           className={`p-1.5 rounded-md border ${
                             source.includeInContext
-                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
+                              ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
                               : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
                           } transition-all cursor-pointer`}
                           title="Toggle in Context Package"
@@ -654,7 +654,7 @@ export default function ProjectDetail({
                 <button
                   id="btn-detail-export-copy"
                   onClick={handleCopyPrompt}
-                  className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-keepo-600 hover:bg-keepo-700 dark:bg-keepo-400 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Clipboard className="w-4 h-4" />}
                   <span>{copied ? t.promptCopied : t.copyPrompt}</span>

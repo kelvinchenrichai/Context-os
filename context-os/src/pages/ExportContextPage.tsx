@@ -166,7 +166,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
             {/* Choose project workspace */}
             <div className="space-y-1.5">
               <label className="text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
-                Select Workspace Project
+                Which project?
               </label>
               <select
                 id="export-project-select"
@@ -198,7 +198,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                     onClick={() => setExportTarget(target.id)}
                     className={`p-2.5 rounded-lg border text-left font-sans font-semibold transition-colors cursor-pointer ${
                       exportTarget === target.id
-                        ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
+                        ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
                         : 'bg-stone-50 border-stone-200 dark:bg-stone-950 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:border-stone-400'
                     }`}
                   >
@@ -211,7 +211,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
             {/* Sections toggles */}
             <div className="space-y-2.5 pt-4 border-t border-stone-100 dark:border-stone-800">
               <label className="text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block mb-1">
-                Include Prompt Content Sections
+                What to include
               </label>
 
               <label className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300 cursor-pointer">
@@ -222,7 +222,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                   onChange={(e) => setIncludeSummary(e.target.checked)}
                   className="rounded border-stone-300 dark:border-stone-850 text-stone-950 focus:ring-0 cursor-pointer"
                 />
-                <span className="font-semibold">Project Executive Summary</span>
+                <span className="font-semibold">Project summary</span>
               </label>
 
               <label className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300 cursor-pointer">
@@ -233,7 +233,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                   onChange={(e) => setIncludeArchitecture(e.target.checked)}
                   className="rounded border-stone-300 dark:border-stone-850 text-stone-950 focus:ring-0 cursor-pointer"
                 />
-                <span className="font-semibold">Technical Architecture Spec</span>
+                <span className="font-semibold">Tech details</span>
               </label>
 
               <label className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300 cursor-pointer">
@@ -244,7 +244,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                   onChange={(e) => setIncludeSources(e.target.checked)}
                   className="rounded border-stone-300 dark:border-stone-850 text-stone-950 focus:ring-0 cursor-pointer"
                 />
-                <span className="font-semibold">Raw Imported Source Metadata ({projectSources.length})</span>
+                <span className="font-semibold">Your saved sources ({projectSources.length})</span>
               </label>
 
               <label className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300 cursor-pointer">
@@ -255,7 +255,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                   onChange={(e) => setIncludeInsights(e.target.checked)}
                   className="rounded border-stone-300 dark:border-stone-850 text-stone-950 focus:ring-0 cursor-pointer"
                 />
-                <span className="font-semibold">Deep Tech Insights Extracted</span>
+                <span className="font-semibold">Key takeaways</span>
               </label>
 
               <label className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300 cursor-pointer">
@@ -266,7 +266,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                   onChange={(e) => setIncludeTodos(e.target.checked)}
                   className="rounded border-stone-300 dark:border-stone-850 text-stone-950 focus:ring-0 cursor-pointer"
                 />
-                <span className="font-semibold">Action Items & TODOs Checklist</span>
+                <span className="font-semibold">To-dos</span>
               </label>
             </div>
 
@@ -275,7 +275,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
               <button
                 id="btn-export-copy-clipboard"
                 onClick={handleCopy}
-                className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2.5 bg-keepo-600 hover:bg-keepo-700 dark:bg-keepo-400 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Clipboard className="w-4 h-4" />}
                 <span>{copied ? t.promptCopied : t.copyPrompt}</span>
@@ -292,7 +292,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
 
               {copied && (
                 <div className="flex items-center justify-center gap-2 pt-1 animate-in fade-in duration-200">
-                  <img src="/mascot/mascot-happy.svg" alt="" className="w-6 h-6" />
+                  <img src="/mascot/mascot-happy.svg" alt="" className="w-10 h-10 animate-mascot" />
                   <span className="text-xs text-stone-500 dark:text-stone-400 font-sans">
                     {lang === 'zh-TW' ? '波波：這個專案的AI背景已經準備好囉！' : "Keepo's ready — paste this into your AI of choice!"}
                   </span>

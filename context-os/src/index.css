@@ -111,4 +111,13 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--stone-900);
 }
 
+/* Keepo mascot — a gentle bob + tilt so 波波 feels alive wherever it shows up */
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(-4deg); }
+}
+.animate-mascot {
+  animation: mascot-bob 2.4s ease-in-out infinite;
+}
+
 

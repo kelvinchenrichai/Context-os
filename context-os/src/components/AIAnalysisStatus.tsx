@@ -12,19 +12,19 @@ export default function AIAnalysisStatus({ onComplete, lang }: AIAnalysisStatusP
   const [progress, setProgress] = useState(0);
 
   const steps = lang === 'zh-TW' ? [
-    '偵測資料來源類型...',
-    '分析與擷取網頁後設資料 (Metadata)...',
-    '產生客觀技術摘要與核心要點...',
-    '自動生成關鍵標籤與預設用途...',
-    '建立與專案庫現有知識的連結關聯...',
-    '分析完成，成功編入專案 AI 核心記憶！'
+    '看看這是什麼類型的內容...',
+    '讀取網頁或影片的內容...',
+    '整理出重點摘要...',
+    '想幾個適合的標籤...',
+    '跟你其他的資料做個連結...',
+    '整理完成，已經加進你的專案囉！'
   ] : [
-    'Detecting resource source platform...',
-    'Extracting raw document metadata...',
-    'Generating technical summaries and key insights...',
-    'Recommending optimal categorization & tags...',
-    'Mapping relationships to existing knowledge items...',
-    'Context indexing complete! Added to memory.'
+    'Checking what kind of content this is...',
+    'Reading through the page or video...',
+    'Writing up a summary...',
+    'Picking a few good tags...',
+    'Linking it to your other saved stuff...',
+    'All done — added to your project!'
   ];
 
   useEffect(() => {
@@ -68,9 +68,9 @@ export default function AIAnalysisStatus({ onComplete, lang }: AIAnalysisStatusP
     <div id="ai-analysis-container" className="bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-xl p-6 font-sans">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <img src="/mascot/mascot-thinking.svg" alt="" className="w-5 h-5" />
+          <img src="/mascot/mascot-thinking.svg" alt="" className="w-8 h-8 animate-mascot" />
           <span className="text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100">
-            {lang === 'zh-TW' ? 'AI 專案記憶建置中' : 'AI Context Engine Analyzing'}
+            {lang === 'zh-TW' ? 'AI 正在整理中' : 'AI is organizing this'}
           </span>
         </div>
         <span className="text-xs font-mono text-stone-500 dark:text-stone-400 font-semibold">

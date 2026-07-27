@@ -532,7 +532,7 @@ export default function SourceDetail({
                   onClick={() => onUpdate(source.id, { includeInContext: !source.includeInContext })}
                   className={`mt-1.5 px-2.5 py-1 rounded-md border text-[10.5px] font-sans font-semibold transition-colors cursor-pointer ${
                     source.includeInContext
-                      ? 'bg-stone-900 border-stone-900 text-white dark:bg-stone-50 dark:border-stone-50 dark:text-stone-950'
+                      ? 'bg-keepo-600 border-keepo-600 text-white dark:bg-keepo-400 dark:border-keepo-400 dark:text-keepo-950'
                       : 'bg-transparent border-stone-200 dark:border-stone-800 text-stone-500'
                   }`}
                 >

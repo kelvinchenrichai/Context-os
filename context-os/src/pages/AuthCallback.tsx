@@ -42,7 +42,7 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center px-4">
         <div className="text-center space-y-4 max-w-sm">
-          <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto" />
+          <img src="/mascot/mascot-sorry.svg" alt="" className="w-20 h-20 mx-auto animate-mascot" />
           <div className="space-y-1">
             <p className="text-sm font-sans font-semibold text-stone-700 dark:text-stone-300">
               登入失敗
@@ -65,7 +65,7 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
       <div className="text-center space-y-4">
-        <img src="/mascot/mascot-thinking.svg" alt="" className="w-14 h-14 mx-auto animate-pulse" />
+        <img src="/mascot/mascot-thinking.svg" alt="" className="w-20 h-20 mx-auto animate-mascot" />
         <div className="space-y-1">
           <p className="text-sm font-sans font-semibold text-stone-700 dark:text-stone-300">
             登入中，請稍候...

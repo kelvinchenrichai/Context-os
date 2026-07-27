@@ -302,3 +302,79 @@ export async function saveExport(data: Record<string, unknown>) {
     body: JSON.stringify(data),
   });
 }
+
+// ─── Admin (backend independently verifies the caller's email is on the
+// ADMIN_EMAILS allowlist for every one of these — this file just calls them) ──
+
+export interface AdminStats {
+  totalUsers: number;
+  newUsers7d: number;
+  newUsers30d: number;
+  usersByPlan: Record<string, number>;
+  thisMonthAnalyses: number;
+  thisMonthImages: number;
+  publicProjectsCount: number;
+  totalCopies: number;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  name: string;
+  plan: string;
+  ai_analyses_used: number;
+  images_used: number;
+  bonus_analyses: number;
+  bonus_images: number;
+  usage_month: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminPublicProject {
+  id: string;
+  name: string;
+  public_slug: string;
+  copy_count: number;
+  created_at: string;
+  owner_email: string;
+}
+
+export interface AdminAuditLogEntry {
+  id: string;
+  admin_email: string;
+  target_user_id: string | null;
+  action: string;
+  before_value: string;
+  after_value: string;
+  created_at: string;
+}
+
+export async function fetchAdminStats() {
+  return apiFetch<AdminStats>('/api/v1/admin/stats');
+}
+
+export async function fetchAdminUsers() {
+  return apiFetch<AdminUser[]>('/api/v1/admin/users');
+}
+
+export async function updateAdminUser(id: string, data: { plan?: string; bonusAnalyses?: number; bonusImages?: number }) {
+  return apiFetch<{ id: string }>(`/api/v1/admin/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function fetchAdminPublicProjects() {
+  return apiFetch<AdminPublicProject[]>('/api/v1/admin/public-projects');
+}
+
+export async function unpublishAdminProject(id: string) {
+  return apiFetch<{ unpublished: boolean }>(`/api/v1/admin/public-projects/${id}/unpublish`, {
+    method: 'PATCH',
+  });
+}
+
+export async function fetchAdminAuditLog() {
+  return apiFetch<AdminAuditLogEntry[]>('/api/v1/admin/audit-log');
+}

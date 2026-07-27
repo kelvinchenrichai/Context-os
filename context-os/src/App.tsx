@@ -40,6 +40,7 @@ import ExportContextPage from './pages/ExportContextPage';
 import Settings from './pages/Settings';
 import PlanPage from './pages/PlanPage';
 import ApiKeysPage from './pages/ApiKeysPage';
+import AdminPage from './pages/AdminPage';
 import OnboardingTour from './components/OnboardingTour';
 
 function pathToTabId(pathname: string): string {
@@ -634,6 +635,7 @@ export default function App() {
                 onToggleKey={handleToggleApiKey} onBack={() => navigate('/settings')}
                 isPowerPlan={plan === 'power'} />
             } />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/auth/callback" element={
               <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center">
                 <div className="text-center space-y-3">

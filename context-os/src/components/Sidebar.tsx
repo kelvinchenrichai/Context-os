@@ -87,7 +87,7 @@ export default function Sidebar({ activeTab, setActiveTab, lang, sourcesCount, c
         </div>
         <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
           <div 
-            className="bg-stone-900 dark:bg-stone-100 h-full rounded-full transition-all duration-300"
+            className="bg-keepo-600 dark:bg-keepo-400 h-full rounded-full transition-all duration-300"
             style={{ width: `${Math.min(100, (sourcesCount / 100) * 100)}%` }}
           />
         </div>

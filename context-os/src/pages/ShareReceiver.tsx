@@ -155,7 +155,7 @@ export default function ShareReceiver({ projects, categories, onCreateCategory, 
       
       {/* Title Header */}
       <div className="flex items-center gap-3 border-b border-stone-100 dark:border-stone-900 pb-4">
-        <div className="w-10 h-10 rounded-xl bg-stone-900 dark:bg-stone-50 text-white dark:text-stone-950 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-stone-900 dark:bg-stone-50 text-white dark:text-keepo-950 flex items-center justify-center">
           <Share2 className="w-5 h-5" />
         </div>
         <div>
@@ -186,7 +186,7 @@ export default function ShareReceiver({ projects, categories, onCreateCategory, 
               setIsSaved(false);
               onBack();
             }}
-            className="w-full py-2 bg-stone-900 hover:bg-stone-850 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-stone-900 text-xs font-sans font-semibold rounded-lg"
+            className="w-full py-2 bg-stone-900 hover:bg-stone-850 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-keepo-950 text-xs font-sans font-semibold rounded-lg"
           >
             {lang === 'zh-TW' ? '回到首頁' : 'Back to Dashboard'}
           </button>
@@ -285,7 +285,7 @@ export default function ShareReceiver({ projects, categories, onCreateCategory, 
               <button
                 id="btn-share-save-primary"
                 onClick={handleSave}
-                className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-stone-950 font-sans font-semibold rounded-lg text-xs"
+                className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg text-xs"
               >
                 Save & Analyze
               </button>

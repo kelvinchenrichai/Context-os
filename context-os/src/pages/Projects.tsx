@@ -48,7 +48,7 @@ export default function Projects({
         <button
           id="btn-create-project-page"
           onClick={onCreateProjectClick}
-          className="bg-stone-950 dark:bg-stone-50 hover:bg-stone-800 dark:hover:bg-stone-200 text-white dark:text-stone-950 text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-150 shadow-sm cursor-pointer"
+          className="bg-keepo-600 dark:bg-keepo-400 hover:bg-keepo-700 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 text-xs font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all duration-150 shadow-sm cursor-pointer"
         >
           <FolderPlus className="w-4 h-4" />
           <span>{t.createProject}</span>

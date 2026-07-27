@@ -118,7 +118,7 @@ export default function ProjectDetail({
           <button
             id="btn-project-add-source"
             onClick={onAddSourceClick}
-            className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-stone-900 text-xs font-sans font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-stone-100 dark:hover:bg-stone-200 text-white dark:text-keepo-950 text-xs font-sans font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>{lang === 'zh-TW' ? '新增收藏來源' : 'Capture Source'}</span>
@@ -395,7 +395,7 @@ export default function ProjectDetail({
                           }}
                           className={`p-1.5 rounded-md border ${
                             source.includeInContext
-                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
+                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
                               : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
                           } transition-all cursor-pointer`}
                           title="Toggle in Context Package"
@@ -545,7 +545,7 @@ export default function ProjectDetail({
                 <button
                   id="btn-detail-export-copy"
                   onClick={handleCopyPrompt}
-                  className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-stone-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Clipboard className="w-4 h-4" />}
                   <span>{copied ? t.promptCopied : t.copyPrompt}</span>

@@ -99,7 +99,7 @@ export default function Settings({
 
       {/* Toast notification */}
       {toast && (
-        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-xs font-sans font-semibold shadow-lg animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-xl text-xs font-sans font-semibold shadow-lg animate-in fade-in slide-in-from-bottom-2">
           {toast}
         </div>
       )}
@@ -132,7 +132,7 @@ export default function Settings({
                   onClick={() => setLang('en')}
                   className={`flex-1 py-1.5 rounded-lg border text-center font-sans font-semibold transition-colors cursor-pointer ${
                     lang === 'en'
-                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-stone-950'
+                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-keepo-950'
                       : 'bg-white border-stone-200 dark:bg-stone-900 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-450'
                   }`}
                 >
@@ -143,7 +143,7 @@ export default function Settings({
                   onClick={() => setLang('zh-TW')}
                   className={`flex-1 py-1.5 rounded-lg border text-center font-sans font-semibold transition-colors cursor-pointer ${
                     lang === 'zh-TW'
-                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-stone-950'
+                      ? 'bg-stone-950 border-stone-950 dark:bg-stone-50 dark:border-stone-50 text-white dark:text-keepo-950'
                       : 'bg-white border-stone-200 dark:bg-stone-900 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-450'
                   }`}
                 >
@@ -208,7 +208,7 @@ export default function Settings({
               <button
                 id="btn-trigger-tour-settings"
                 onClick={onRestartTour}
-                className="w-full py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-center font-sans font-semibold transition-all hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-center font-sans font-semibold transition-all hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
               >
                 <HelpCircle className="w-3.5 h-3.5" />
                 <span>{lang === 'zh-TW' ? '重新啟動功能導覽' : 'Restart Walkthrough'}</span>
@@ -301,7 +301,7 @@ export default function Settings({
                         }}
                         className="flex-1 bg-stone-50 dark:bg-stone-950 border border-stone-300 dark:border-stone-700 rounded-md px-2 py-1 text-xs text-stone-900 dark:text-stone-100 focus:outline-none focus:border-stone-500"
                       />
-                      <button onClick={confirmEditingCategory} className="p-1.5 rounded-md bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900">
+                      <button onClick={confirmEditingCategory} className="p-1.5 rounded-md bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950">
                         <Check className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => setEditingCatId(null)} className="p-1.5 rounded-md border border-stone-200 dark:border-stone-800 text-stone-500">
@@ -346,7 +346,7 @@ export default function Settings({
                 <button
                   id="btn-add-category"
                   onClick={handleAddCategory}
-                  className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-[11px] font-semibold"
+                  className="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 text-[11px] font-semibold"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>{lang === 'zh-TW' ? '新增' : 'Add'}</span>
@@ -377,7 +377,7 @@ export default function Settings({
                 className={`px-4 py-2 rounded-lg text-xs font-sans font-semibold transition-all ${
                   isPwaInstalled 
                     ? 'bg-emerald-50 text-emerald-600 cursor-default' 
-                    : 'bg-stone-950 dark:bg-stone-50 hover:bg-stone-850 dark:hover:bg-stone-250 text-white dark:text-stone-950 cursor-pointer'
+                    : 'bg-keepo-600 dark:bg-keepo-400 hover:bg-keepo-700 dark:hover:bg-keepo-300 text-white dark:text-keepo-950 cursor-pointer'
                 }`}
               >
                 {isPwaInstalled ? 'PWA Installed to Simulated Desktop' : 'Install Standalone App'}

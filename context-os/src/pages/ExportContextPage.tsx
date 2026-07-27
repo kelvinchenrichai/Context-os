@@ -198,7 +198,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                     onClick={() => setExportTarget(target.id)}
                     className={`p-2.5 rounded-lg border text-left font-sans font-semibold transition-colors cursor-pointer ${
                       exportTarget === target.id
-                        ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
+                        ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
                         : 'bg-stone-50 border-stone-200 dark:bg-stone-950 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:border-stone-400'
                     }`}
                   >
@@ -275,7 +275,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
               <button
                 id="btn-export-copy-clipboard"
                 onClick={handleCopy}
-                className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-stone-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2.5 bg-stone-950 hover:bg-stone-800 dark:bg-stone-50 dark:hover:bg-stone-200 text-white dark:text-keepo-950 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Clipboard className="w-4 h-4" />}
                 <span>{copied ? t.promptCopied : t.copyPrompt}</span>

@@ -28,7 +28,7 @@ function UsageBar({ used, max, label, lang }: { used: number; max: number; label
         <div className="w-full bg-stone-100 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-500 ${
-              isOver ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-stone-900 dark:bg-stone-100'
+              isOver ? 'bg-red-500' : pct > 80 ? 'bg-amber-500' : 'bg-keepo-600 dark:bg-keepo-400'
             }`}
             style={{ width: `${pct}%` }}
           />
@@ -145,7 +145,7 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
                 key={p.id}
                 className={`relative flex flex-col p-5 rounded-xl border text-xs font-sans transition-all ${
                   isActive
-                    ? 'border-stone-900 dark:border-stone-100 bg-stone-50/60 dark:bg-stone-900/20 shadow-sm'
+                    ? 'border-keepo-600 dark:border-keepo-400 bg-stone-50/60 dark:bg-stone-900/20 shadow-sm'
                     : 'border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/10'
                 }`}
               >
@@ -155,7 +155,7 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
                   </span>
                 )}
                 {isActive && (
-                  <span className="absolute -top-2.5 right-4 text-[9px] font-sans font-bold px-2 py-0.5 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900">
+                  <span className="absolute -top-2.5 right-4 text-[9px] font-sans font-bold px-2 py-0.5 rounded-full bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950">
                     {zh ? '目前方案' : 'Current'}
                   </span>
                 )}
@@ -184,7 +184,7 @@ export default function PlanPage({ lang, plan, setPlan, projectCount, sourceCoun
                       : p.id === 'pro'
                         ? 'bg-keepo-600 hover:bg-keepo-700 text-white'
                         : p.id === 'power'
-                          ? 'bg-stone-900 dark:bg-stone-100 hover:opacity-90 text-white dark:text-stone-900'
+                          ? 'bg-keepo-600 dark:bg-keepo-400 hover:opacity-90 text-white dark:text-keepo-950'
                           : 'bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300'
                   }`}
                 >

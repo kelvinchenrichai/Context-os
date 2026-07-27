@@ -81,7 +81,7 @@ export default function AIAnalysisStatus({ onComplete, lang }: AIAnalysisStatusP
       {/* Progress Bar */}
       <div className="w-full bg-stone-200 dark:bg-stone-800 h-1 rounded-full overflow-hidden mb-6">
         <div 
-          className="bg-stone-900 dark:bg-stone-100 h-full rounded-full transition-all duration-300 ease-out"
+          className="bg-keepo-600 dark:bg-keepo-400 h-full rounded-full transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>

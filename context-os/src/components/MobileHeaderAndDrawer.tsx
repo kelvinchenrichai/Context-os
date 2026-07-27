@@ -128,7 +128,7 @@ export function MobileDrawer({
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 shadow-sm'
+                    ? 'bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 shadow-sm'
                     : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100/60 dark:hover:bg-stone-900/60'
                 }`}
               >
@@ -154,7 +154,7 @@ export function MobileDrawer({
           </div>
           <div className="w-full bg-stone-200 dark:bg-stone-800 h-1 rounded-full overflow-hidden">
             <div 
-              className="bg-stone-900 dark:bg-stone-100 h-full rounded-full transition-all duration-300"
+              className="bg-keepo-600 dark:bg-keepo-400 h-full rounded-full transition-all duration-300"
               style={{ width: `${Math.min(100, (sourcesCount / 100) * 100)}%` }}
             />
           </div>

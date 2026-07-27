@@ -310,7 +310,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
             )}
           </div>
           <div className="flex gap-2">
-            <button onClick={resetForm} className="flex-1 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-xs font-semibold">
+            <button onClick={resetForm} className="flex-1 py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-xl text-xs font-semibold">
               {zh ? '再存一個' : 'Save another'}
             </button>
             <button onClick={onBack} className="flex-1 py-2 border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 rounded-xl text-xs font-semibold">
@@ -556,7 +556,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
             <button
               type="submit"
               disabled={!uploadedImageUrl || saving || uploading}
-              className="w-full py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              className="w-full py-3 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
             >
               {saving ? (
                 <><Loader2 className="w-4 h-4 animate-spin" />{zh ? '儲存中...' : 'Saving...'}</>
@@ -695,7 +695,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
                 onClick={() => setImportance(level)}
                 className={`flex-1 py-1.5 rounded-lg border text-[10px] font-semibold transition-all ${
                   importance === level
-                    ? 'bg-stone-900 dark:bg-stone-100 border-stone-900 dark:border-stone-100 text-white dark:text-stone-900'
+                    ? 'bg-keepo-600 dark:bg-keepo-400 border-keepo-600 dark:border-keepo-400 text-white dark:text-keepo-950'
                     : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:border-stone-400'
                 }`}
               >
@@ -751,7 +751,7 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
           <button
             type="submit"
             disabled={!url.trim() || saving}
-            className="w-full py-3 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            className="w-full py-3 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-xl text-sm font-sans font-bold disabled:opacity-40 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
           >
             {saving ? (
               <><Loader2 className="w-4 h-4 animate-spin" />{zh ? '儲存中...' : 'Saving...'}</>

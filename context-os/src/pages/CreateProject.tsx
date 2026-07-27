@@ -205,7 +205,7 @@ export default function CreateProject({ categories, onCreateCategory, onSave, on
           <button
             id="btn-create-project-submit"
             type="submit"
-            className="px-4 py-2 bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 hover:bg-stone-800 dark:hover:bg-stone-200 rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer"
+            className="px-4 py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 hover:bg-keepo-700 dark:hover:bg-keepo-300 rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer"
           >
             {lang === 'zh-TW' ? '確認建立' : 'Create Context Core'}
           </button>

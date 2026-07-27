@@ -191,7 +191,7 @@ export default function TodoSection({ projects, lang, filterProjectId }: TodoSec
           {/* Add button */}
           <button
             onClick={() => setShowForm(v => !v)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-sans font-semibold bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-sans font-semibold bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 hover:opacity-90 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
             {zh ? '新增' : 'Add'}
@@ -268,7 +268,7 @@ export default function TodoSection({ projects, lang, filterProjectId }: TodoSec
           <button
             onClick={handleAdd}
             disabled={!inputText.trim() || saving}
-            className="w-full py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center justify-center gap-1.5"
+            className="w-full py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-xs font-semibold disabled:opacity-40 flex items-center justify-center gap-1.5"
           >
             {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
             {zh ? '新增待辦' : 'Add Todo'}

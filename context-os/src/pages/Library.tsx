@@ -154,7 +154,7 @@ export default function Library({
           onClick={() => { setBatchMode(v => !v); setSelectedIds(new Set()); setBatchAction(null); }}
           className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors ${
             batchMode
-              ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900'
+              ? 'bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 border-stone-900'
               : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:border-stone-400'
           }`}
         >
@@ -351,7 +351,7 @@ export default function Library({
                               ? 'bg-keepo-500 border-keepo-500 text-white'
                               : 'border-stone-300 dark:border-stone-600 text-transparent hover:border-keepo-400'
                             : source.includeInContext
-                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-stone-950'
+                              ? 'bg-stone-900 border-stone-900 dark:bg-stone-100 dark:border-stone-100 text-white dark:text-keepo-950'
                               : 'bg-transparent border-stone-200 dark:border-stone-800 text-transparent hover:border-stone-400'
                         }`}
                         title={batchMode ? (isSelected ? '取消選取' : '選取') : 'Include in Context Package'}

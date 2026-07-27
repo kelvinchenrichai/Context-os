@@ -60,7 +60,7 @@ export default function CategorySelect({ id, categories, value, onChange, onCrea
         <button
           type="button"
           onClick={confirmCreate}
-          className="shrink-0 p-2 rounded-lg bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:opacity-90"
+          className="shrink-0 p-2 rounded-lg bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 hover:opacity-90"
         >
           <Check className="w-3.5 h-3.5" />
         </button>

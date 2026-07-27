@@ -337,7 +337,7 @@ export default function OnboardingTour({
             )}
             <button
               onClick={handleNext}
-              className="flex items-center gap-1 px-3 py-1.5 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
+              className="flex items-center gap-1 px-3 py-1.5 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
             >
               {currentStep === TOUR_STEPS.length - 1
                 ? (zh ? '開始使用' : 'Get Started')

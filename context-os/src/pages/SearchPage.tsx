@@ -131,7 +131,7 @@ export default function SearchPage({ sources, projects, onViewSource, lang }: Se
             onClick={() => setFilterType('all')}
             className={`px-2.5 py-1 rounded-full text-[10px] font-sans font-semibold border transition-colors ${
               filterType === 'all'
-                ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100'
+                ? 'bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 border-keepo-600 dark:border-keepo-400'
                 : 'bg-white dark:bg-stone-900 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-800 hover:border-stone-400'
             }`}
           >
@@ -150,7 +150,7 @@ export default function SearchPage({ sources, projects, onViewSource, lang }: Se
                 onClick={() => setFilterType(type)}
                 className={`px-2.5 py-1 rounded-full text-[10px] font-sans font-semibold border transition-colors ${
                   filterType === type
-                    ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-stone-900 dark:border-stone-100'
+                    ? 'bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 border-keepo-600 dark:border-keepo-400'
                     : 'bg-white dark:bg-stone-900 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-800 hover:border-stone-400'
                 }`}
               >

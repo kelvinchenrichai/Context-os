@@ -72,7 +72,7 @@ export default function QuickCapture({ projects, onSave, lang }: QuickCapturePro
             disabled={isSubmitting || !url.trim()}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all duration-150 ${
               url.trim()
-                ? 'bg-stone-950 dark:bg-stone-50 text-white dark:text-stone-950 hover:bg-stone-800 dark:hover:bg-stone-200 cursor-pointer'
+                ? 'bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 hover:bg-keepo-700 dark:hover:bg-keepo-300 cursor-pointer'
                 : 'bg-stone-100 dark:bg-stone-900 text-stone-400 dark:text-stone-600 cursor-not-allowed'
             }`}
           >

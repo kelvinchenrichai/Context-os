@@ -36,9 +36,7 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-stone-950 flex items-center justify-center px-4">
         <div className="text-center space-y-4 max-w-sm">
-          <div className="w-12 h-12 rounded-2xl bg-stone-900 dark:bg-stone-100 mx-auto flex items-center justify-center">
-            <span className="font-mono text-lg font-bold text-white dark:text-stone-900">!</span>
-          </div>
+          <img src="/mascot/mascot-sorry.svg" alt="" className="w-14 h-14 mx-auto" />
           <div className="space-y-1">
             <p className="text-sm font-sans font-semibold text-stone-700 dark:text-stone-300">
               登入失敗
@@ -49,7 +47,7 @@ export default function AuthCallback({ onLogin }: AuthCallbackProps) {
           </div>
           <a
             href="/"
-            className="inline-block text-sm font-sans font-semibold text-white dark:text-stone-900 bg-stone-900 dark:bg-stone-100 rounded-xl px-4 py-2"
+            className="inline-block text-sm font-sans font-semibold text-white dark:text-keepo-950 bg-keepo-600 dark:bg-keepo-400 rounded-xl px-4 py-2"
           >
             重新登入
           </a>

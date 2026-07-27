@@ -72,7 +72,7 @@ export default function BottomNav({ activeTab, setActiveTab, lang }: BottomNavPr
           >
             <div className={`p-1.5 rounded-full transition-transform duration-150 ${
               isActive 
-                ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-950 scale-105 shadow-sm' 
+                ? 'bg-keepo-600 text-white dark:bg-keepo-400 dark:text-keepo-950 scale-105 shadow-sm'
                 : 'bg-transparent'
             }`}>
               <Icon className="w-4 h-4" />

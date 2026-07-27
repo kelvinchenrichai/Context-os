@@ -69,7 +69,7 @@ export default function PwaInstallPrompt({ lang }: PwaInstallPromptProps) {
           <div className="flex gap-2 pt-1">
             <button
               onClick={handleInstall}
-              className="px-3 py-1 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-[11px] font-semibold"
+              className="px-3 py-1 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-[11px] font-semibold"
             >
               {zh ? '安裝' : 'Install'}
             </button>

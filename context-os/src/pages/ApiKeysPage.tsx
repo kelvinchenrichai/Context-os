@@ -125,7 +125,7 @@ export default function ApiKeysPage({ lang, apiKeys, onAddKey, onDeleteKey, onTo
                   {/* Toggle active */}
                   <button
                     onClick={() => onToggleKey(key.id)}
-                    className={`shrink-0 w-8 h-4.5 rounded-full transition-colors relative ${key.isActive ? 'bg-stone-900 dark:bg-stone-100' : 'bg-stone-200 dark:bg-stone-700'}`}
+                    className={`shrink-0 w-8 h-4.5 rounded-full transition-colors relative ${key.isActive ? 'bg-keepo-600 dark:bg-keepo-400' : 'bg-stone-200 dark:bg-stone-700'}`}
                   >
                     <span className={`absolute top-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-stone-900 transition-transform ${key.isActive ? 'translate-x-4' : 'translate-x-0.5'}`} />
                   </button>
@@ -163,7 +163,7 @@ export default function ApiKeysPage({ lang, apiKeys, onAddKey, onDeleteKey, onTo
                   onClick={() => setSelectedProvider(p.id)}
                   className={`flex-1 py-1.5 px-2 rounded-lg border text-[10.5px] font-sans font-semibold transition-all ${
                     selectedProvider === p.id
-                      ? 'border-stone-900 dark:border-stone-100 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900'
+                      ? 'border-keepo-600 dark:border-keepo-400 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950'
                       : 'border-stone-200 dark:border-stone-800 text-stone-500 dark:text-stone-400 hover:border-stone-400'
                   }`}
                 >
@@ -228,7 +228,7 @@ export default function ApiKeysPage({ lang, apiKeys, onAddKey, onDeleteKey, onTo
           <button
             onClick={handleAdd}
             disabled={!rawKey.trim()}
-            className="flex items-center gap-1.5 px-4 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 rounded-lg text-xs font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-4 py-2 bg-keepo-600 dark:bg-keepo-400 text-white dark:text-keepo-950 rounded-lg text-xs font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
             {zh ? '儲存 Key' : 'Save Key'}

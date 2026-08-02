@@ -19,13 +19,16 @@ interface ExportContextPageProps {
 }
 
 type ExportTarget = 'chatgpt' | 'claude' | 'gemini' | 'cursor';
+type ExportFormat = 'text' | 'json';
 
 export default function ExportContextPage({ projects, sources, lang }: ExportContextPageProps) {
   const t = TRANSLATIONS[lang];
+  const zh = lang === 'zh-TW';
 
   // Export Settings States
   const [selectedProjectId, setSelectedProjectId] = useState<string>(projects[0]?.id || '');
   const [exportTarget, setExportTarget] = useState<ExportTarget>('claude');
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('text');
   const [copied, setCopied] = useState(false);
 
   // Content Toggles
@@ -127,17 +130,45 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
     return prompt;
   };
 
+  // Structured JSON export — for programmatic systems (e.g. "AI工廠") that
+  // parse this rather than a human/chat-AI reading prose. Deliberately a
+  // separate shape from generatePrompt(), agreed 2026-07-27: {source_project,
+  // exported_at, items:[...]}. Only sources with includeInContext are
+  // exported, matching the plain-text format's own filtering.
+  const generateJSON = () => {
+    if (!project) return '';
+    const payload = {
+      source_project: project.name,
+      exported_at: new Date().toISOString(),
+      items: projectSources.map(s => ({
+        title: s.title,
+        url: s.url,
+        source_type: s.sourceType || null,
+        publisher: s.publisher || null,
+        published_at: s.publishedAt || null,
+        collected_at: s.createdAt,
+        ai_summary: s.aiSummary,
+        key_points: s.aiKeyPoints,
+        tags: s.tags,
+        reliability_hint: s.importance || null,
+      })),
+    };
+    return JSON.stringify(payload, null, 2);
+  };
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatePrompt());
+    navigator.clipboard.writeText(exportFormat === 'json' ? generateJSON() : generatePrompt());
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
+    const isJson = exportFormat === 'json';
     const element = document.createElement("a");
-    const file = new Blob([generatePrompt()], {type: 'text/plain'});
+    const file = new Blob([isJson ? generateJSON() : generatePrompt()], { type: isJson ? 'application/json' : 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = `${project ? project.name.replace(/\s+/g, '-').toLowerCase() : 'context'}-prompt.md`;
+    const baseName = project ? project.name.replace(/\s+/g, '-').toLowerCase() : 'context';
+    element.download = isJson ? `${baseName}-export.json` : `${baseName}-prompt.md`;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -180,7 +211,39 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
               </select>
             </div>
 
-            {/* Platform Optimizations */}
+            {/* Export format */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+                {zh ? '匯出格式' : 'Export Format'}
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                <button
+                  id="btn-format-text"
+                  onClick={() => setExportFormat('text')}
+                  className={`p-2.5 rounded-lg border text-left font-sans font-semibold transition-colors cursor-pointer ${
+                    exportFormat === 'text'
+                      ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
+                      : 'bg-stone-50 border-stone-200 dark:bg-stone-950 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:border-stone-400'
+                  }`}
+                >
+                  {zh ? '純文字（給對話式AI貼上）' : 'Plain text (paste to chat AI)'}
+                </button>
+                <button
+                  id="btn-format-json"
+                  onClick={() => setExportFormat('json')}
+                  className={`p-2.5 rounded-lg border text-left font-sans font-semibold transition-colors cursor-pointer ${
+                    exportFormat === 'json'
+                      ? 'bg-keepo-600 border-keepo-600 dark:bg-keepo-400 dark:border-keepo-400 text-white dark:text-keepo-950'
+                      : 'bg-stone-50 border-stone-200 dark:bg-stone-950 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:border-stone-400'
+                  }`}
+                >
+                  {zh ? 'JSON（給程式化系統解析）' : 'JSON (for programmatic systems)'}
+                </button>
+              </div>
+            </div>
+
+            {/* Platform Optimizations — only meaningful for the plain-text chat-AI format */}
+            {exportFormat === 'text' && (
             <div className="space-y-2">
               <label className="text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
                 Optimize Prompt For
@@ -207,8 +270,12 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                 ))}
               </div>
             </div>
+            )}
 
-            {/* Sections toggles */}
+            {/* Sections toggles — the JSON format always exports the full
+                items array (that's its only shape), so these only apply to
+                the plain-text prompt format */}
+            {exportFormat === 'text' && (
             <div className="space-y-2.5 pt-4 border-t border-stone-100 dark:border-stone-800">
               <label className="text-[10px] font-mono font-bold text-stone-400 dark:text-stone-500 uppercase tracking-wider block mb-1">
                 What to include
@@ -269,6 +336,14 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                 <span className="font-semibold">To-dos</span>
               </label>
             </div>
+            )}
+            {exportFormat === 'json' && (
+              <p className="text-[11px] text-stone-400 dark:text-stone-500 pt-4 border-t border-stone-100 dark:border-stone-800">
+                {zh
+                  ? `JSON 匯出會包含這個專案裡所有勾選「加入AI背景」的資料（共 ${projectSources.length} 筆），格式固定，不需要另外勾選。`
+                  : `JSON export includes all sources marked "include in context" (${projectSources.length}), format is fixed.`}
+              </p>
+            )}
 
             {/* Actions triggers */}
             <div className="pt-4 border-t border-stone-100 dark:border-stone-800 space-y-2">
@@ -287,7 +362,7 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                 className="w-full py-2 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900/45 font-sans font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4" />
-                <span>{t.downloadMarkdown}</span>
+                <span>{exportFormat === 'json' ? (zh ? '匯出為 JSON' : 'Export as JSON') : t.downloadMarkdown}</span>
               </button>
 
               {copied && (
@@ -311,12 +386,12 @@ export default function ExportContextPage({ projects, sources, lang }: ExportCon
                 <FileCode2 className="w-3.5 h-3.5 text-stone-400" />
                 <span>Prompt Live Compiler Preview</span>
               </div>
-              <span className="text-[10px] font-mono text-stone-600">Markdown format</span>
+              <span className="text-[10px] font-mono text-stone-600">{exportFormat === 'json' ? 'JSON format' : 'Markdown format'}</span>
             </div>
 
             {/* Preview text container */}
             <div className="flex-1 overflow-y-auto font-mono text-[10.5px] text-stone-300 leading-relaxed whitespace-pre-wrap select-all">
-              {project ? generatePrompt() : 'Select a project to preview context prompt.'}
+              {project ? (exportFormat === 'json' ? generateJSON() : generatePrompt()) : 'Select a project to preview context prompt.'}
             </div>
           </div>
         </div>

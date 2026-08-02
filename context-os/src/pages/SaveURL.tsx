@@ -28,6 +28,8 @@ interface SaveURLProps {
     analyzeNow: boolean;
     includeInContext: boolean;
     imageUrl?: string;
+    publisher?: string | null;
+    publishedAt?: string | null;
   }) => Promise<void> | void;
   onBack: () => void;
   lang: Language;
@@ -54,6 +56,8 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [publisher, setPublisher] = useState<string | null>(null);
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [metaLoading, setMetaLoading] = useState(false);
   const [metaFetched, setMetaFetched] = useState(false);
 
@@ -128,6 +132,8 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
     setTitle('');
     setDescription('');
     setImageUrl(null);
+    setPublisher(null);
+    setPublishedAt(null);
 
     if (metaTimer.current) clearTimeout(metaTimer.current);
     if (value.startsWith('http')) {
@@ -153,6 +159,8 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
         setTitle(meta.title || '');
         setDescription(meta.description || '');
         setImageUrl(meta.imageUrl || null);
+        setPublisher(meta.publisher || null);
+        setPublishedAt(meta.publishedAt || null);
         setMetaFetched(true);
 
         // Auto-set category based on platform
@@ -259,6 +267,8 @@ export default function SaveURL({ projects, categories, onCreateCategory, onSave
         category, tags, note, importance, useCase,
         analyzeNow,
         includeInContext,
+        publisher,
+        publishedAt,
       });
 
       // If analyze now, call AI analysis after save

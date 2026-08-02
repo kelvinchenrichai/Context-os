@@ -377,6 +377,7 @@ export default function App() {
     projectId: string; title: string; url: string; type: SourceType; platform: SourcePlatform;
     category: string; tags: string[]; note: string; importance: ImportanceLevel;
     useCase: string; analyzeNow: boolean; includeInContext: boolean; imageUrl?: string;
+    publisher?: string | null; publishedAt?: string | null;
   }) => {
     const toastId = showToast('loading', sourceData.analyzeNow
       ? (lang === 'zh-TW' ? '儲存並分析中…' : 'Saving & analyzing…')

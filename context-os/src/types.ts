@@ -66,6 +66,9 @@ export interface Source {
   isAnalyzed: boolean;
   includeInContext: boolean;
   imageUrl?: string | null;
+  publisher?: string | null;
+  publishedAt?: string | null;
+  sourceType?: string | null;
   createdAt: string;
   updatedAt: string;
 }
